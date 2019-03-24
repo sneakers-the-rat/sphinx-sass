@@ -75,3 +75,4 @@ entry in the configuration variable ``html_static_path``, if it exists.
 - Compiled CSS files are written directly to
  the build directory just before Sphinx
  exits (during the ``build-finished``) event.
+ - **sass_compile** is pre-alpha. It should just work as is, but bugs are likely and anything or everything may change with absolutely no warning.
