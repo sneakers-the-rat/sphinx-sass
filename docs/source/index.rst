@@ -49,7 +49,7 @@ The configuration options are as follows:
    This should be relative to the first
    entry specified in ``html_static_path``
 - ``compile_options``
-   Options passed to the `compile`
+   Options passed to the ``compile``
    function from |libsass|.
    Note that source map options are
    currently ignored.
@@ -66,7 +66,7 @@ The configuration options are as follows:
 Configuration from an extension
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To use ``sass_compile`` in an extension,
+To use |package-name| in an extension,
 it is necessary to connect to the ``config-inited``
 event (note this only available from Sphinx v1.8):
 
