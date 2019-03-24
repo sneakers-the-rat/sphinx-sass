@@ -76,3 +76,8 @@ entry in the configuration variable ``html_static_path``, if it exists.
  the build directory just before Sphinx
  exits (during the ``build-finished``) event.
  - **sass_compile** is pre-alpha. It should just work as is, but bugs are likely and anything or everything may change with absolutely no warning.
+
+# Acknowledgements
+
+This extension makes use of the
+rather excellent [``libsass``](https://github.com/sass/libsass-python) package.
