@@ -60,7 +60,7 @@ event (note this only available from Sphinx v1.8):
        app.connect('config-inited', init)
 
     def init(app, config):
-       config.sass_compile_configs['custom-config] = dict(
+       config.sass_compile_configs['custom-config'] = dict(
           # configuration
        )
 
