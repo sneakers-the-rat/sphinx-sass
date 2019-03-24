@@ -1,0 +1,7 @@
+autopep8==1.4
+libsass==0.18.0
+nox==2018.9.14
+pylint==2.0.1
+pytest-cov==2.6.0
+pytest==3.8.0
+Sphinx==1.8.0
