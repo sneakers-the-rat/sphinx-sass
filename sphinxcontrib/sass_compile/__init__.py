@@ -11,7 +11,7 @@ import sass
 
 def run_sass(app, _exception):
     """Setup sass."""
-    configs = app.config.sass_configs
+    configs = app.config.sass_compile_configs
     for config in configs.values():
         compile_sass_config(app, config)
 
@@ -56,7 +56,16 @@ def compile_sass(entry, output, compile_options, sass_vars):
             file_out.write(css)
 
 
+def init(app):
+    """Set up the style sheets."""
+    configs = app.config.sass_compile_configs
+    for config in configs.values():
+        if config.get('stylesheet', True):
+            app.add_stylesheet(config['output'])
+
+
 def setup(app):
     """Setup the app."""
-    app.add_config_value('sass_configs', {}, 'env')
+    app.connect('builder-inited', init)
+    app.add_config_value('sass_compile_configs', {}, 'env')
     app.connect('build-finished', run_sass)
