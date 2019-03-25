@@ -84,11 +84,13 @@ class TestSetup(TestCase):
         self.fs.create_dir(srcdir)
         app = Sphinx(
             srcdir, FIXTURES, builddir, doctreedir, 'html')
-        config = app.config
-        app.builder.cleanup()
 
+        config = app.config
         self.assertTrue(os.path.exists(builddir))
         self.assertTrue(os.path.exists(doctreedir))
 
         self.assertIn('sass_configs', config)
         self.assertDictEqual(config.sass_configs, expected)
+
+        css_file = app.registry.css_files[0][0]
+        self.assertEqual(css_file, expected['test']['output'])
