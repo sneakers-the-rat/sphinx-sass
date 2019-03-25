@@ -7,6 +7,7 @@ release = ''
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx_sass'
 ]
 templates_path = ['_templates']
 source_suffix = '.rst'
@@ -38,5 +39,8 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 sass_configs = dict(
-    foo='bar'
+    test=dict(
+        entry='test.scss',
+        output='test.css'
+    )
 )

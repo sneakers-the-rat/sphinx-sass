@@ -59,9 +59,9 @@ def compile_sass(entry, output, compile_options, sass_vars):
 def init(app):
     """Set up the style sheets."""
     configs = app.config.sass_configs
-    for config in configs.values():
-        if config.get('stylesheet', True):
-            app.add_stylesheet(config['output'])
+    # for config in configs.values():
+    #     if config.get('stylesheet', True):
+    #         app.add_stylesheet(config['output'])
 
 
 def setup(app):
