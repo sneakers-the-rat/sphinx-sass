@@ -29,14 +29,16 @@ def compile_sass_config(app, config):
         config.get('variables', {}))
 
 
-def compile_sass(entry, output, compile_options, sass_vars):
+def compile_sass(entry, output, compile_options=None, sass_vars=None):
     """Compile sass."""
+    compile_options = compile_options or {}
+    sass_vars = compile_options or {}
     os.makedirs(os.path.dirname(output), exist_ok=True)
 
     sass_vars = ['${}:{};'.format(var, val) for var, val in sass_vars.items()]
     header = '\n'.join(sass_vars)
     with open(entry, 'r') as file_in:
-        source = header + '\n' + file_in.read()
+        source = file_in.read()
 
     if source.strip():
         compile_options.pop('filename', None)
@@ -45,7 +47,7 @@ def compile_sass(entry, output, compile_options, sass_vars):
         include_paths = [os.path.dirname(entry)]
         include_paths.extend(compile_options.pop('include_paths', []))
         css = sass.compile(
-            string=source,
+            string=header + '\n' + source,
             include_paths=include_paths,
             **compile_options)
     else:

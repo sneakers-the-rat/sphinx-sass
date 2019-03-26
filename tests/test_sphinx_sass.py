@@ -10,73 +10,16 @@ from pathlib import Path
 import sys
 import unittest
 
-from docutils.parsers.rst import directives, roles
-
-from pyfakefs.fake_filesystem_unittest import TestCase
-
-import sphinx.util.pycompat
-import sphinx.config
-from sphinx.application import Sphinx
-
-from sphinx_sass import setup
+from sphinx_sass import compile_sass, setup
 
 import tests.fixtures
 from tests.fixtures import test_extension1, test_extension2
 
-FIXTURES = tests.fixtures.__path__._path[0]  # pylint: disable=protected-access
-
-with open(os.path.join(FIXTURES, 'conf.template.py'), 'r') as file_in:
-    CONF_PY = file_in.read()
-
-
-def clear_docutils_cache():
-    """Clear docutils cache for directives and roles."""
-    directives._directives = {}
-    roles._roles = {}
-
-
-def make_conf_py(extensions=None, sass_configs=None):
-    """Create a custom conf_py from a template."""
-    conf_py = CONF_PY
-    if extensions:
-        conf_py = conf_py.replace('# __extensions__', repr(extensions)[1:-1])
-    if sass_configs:
-        conf_py = conf_py.replace(
-            '# __sass_configs__', 'sass_configs = {}'.format(repr(sass_configs)))
-    return conf_py
-
-
-class BaseSphinxTestCase(TestCase):
-    """Base test class helper for testing with Sphinx."""
-
-    def setUp(self):
-        self.setUpPyfakefs(
-            modules_to_reload=[sphinx.util.pycompat, sphinx.config])
-        packages = [
-            path for path in sys.path if path.endswith('site-packages')]
-        for package in packages:
-            self.fs.add_real_directory(package)
-        self.fs.add_real_directory(FIXTURES)
-        clear_docutils_cache()
-
-        docs = Path('docs')
-        self.srcdir = docs / 'source'
-        self.confdir = None
-        self.outdir = docs / 'build'
-        self.doctreedir = self.outdir / '.doctrees'
-
-        self.fs.create_dir(self.srcdir)
-
-    def get_sphinx_app(self, **kwargs):
-        """Helper for creating test sphinx app."""
-        srcdir = kwargs.pop('srcdir', self.srcdir)
-        confdir = kwargs.pop('confdir', self.confdir)
-        outdir = kwargs.pop('outdir', self.outdir)
-        doctreedir = kwargs.pop('doctreedir', self.doctreedir)
-        status = kwargs.pop('status', None)
-        warning = kwargs.pop('warning', None)
-        return Sphinx(
-            srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
+from tests.helpers import (
+    BaseSphinxTestCase,
+    clear_docutils_cache,
+    make_conf_py,
+    parse_css)
 
 
 class TestSetup(BaseSphinxTestCase):
@@ -177,3 +120,29 @@ class TestConfig(BaseSphinxTestCase):
             ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
         css_file = app.registry.css_files[1][0]
         self.assertEqual(css_file, ext.SASS_CONFIG['output'])
+
+
+class TestCompileSass(BaseSphinxTestCase):
+    """Tests for the :func:`compile_sass` function."""
+
+    def test_empty_entry(self):
+        """No CSS written if SCSS file empty."""
+        entry = self.srcdir / 'main.scss'
+        output = self.outdir / 'main.css'
+        self.fs.create_file(entry, contents='')
+        compile_sass(entry, output, {}, {})
+        self.assertFalse(os.path.exists(output))
+
+    def test_css_created(self):
+        """CSS file created for valid SCSS."""
+        entry = self.srcdir / 'main.scss'
+        output = self.outdir / 'main.css'
+        self.fs.create_file(
+            entry,
+            contents='$color: red !default; body { h1, h2 { color: $color; } }')
+        compile_sass(entry, output, {}, {})
+        self.assertTrue(os.path.exists(output))
+
+        rules = parse_css(output)
+        self.assertIn('body h1', rules)
+        self.assertDictEqual(rules['body h1'], {'color': 'red'})
