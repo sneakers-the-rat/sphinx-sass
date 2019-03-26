@@ -1,9 +1,10 @@
-$test-color: red;
-body {
-  h1,
-  h2,
-  h3,
-  h4 {
+$test-color: red !default;
+
+h1,
+h2,
+h3,
+h4 {
+  .test {
     color: $test-color;
   }
 }
