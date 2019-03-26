@@ -7,7 +7,7 @@ release = ''
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx_sass'
+    # __extensions__
 ]
 templates_path = ['_templates']
 source_suffix = '.rst'
@@ -38,9 +38,4 @@ texinfo_documents = [
 epub_title = project
 epub_exclude_files = ['search.html']
 
-sass_configs = dict(
-    test=dict(
-        entry='test.scss',
-        output='test.css'
-    )
-)
+# __sass_configs__

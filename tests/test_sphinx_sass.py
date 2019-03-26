@@ -9,27 +9,21 @@ import os
 from pathlib import Path
 import sys
 import unittest
-import warnings
 
-from docutils.parsers.rst import directives
-from docutils.parsers.rst import roles
-import pyfakefs
+from docutils.parsers.rst import directives, roles
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-import sphinx
+import sphinx.util.pycompat
+import sphinx.config
 from sphinx.application import Sphinx
 
 from sphinx_sass import setup
 
 FIXTURES = os.path.abspath(os.path.join(os.path.dirname(__file__), 'fixtures'))
 
-
-def disable_sphinx_loggers():
-    """Disable the loggers from sphing."""
-    for name in logging.root.manager.loggerDict:
-        if name.startswith('sphinx'):
-            logger = logging.getLogger(name)
-            logger.disabled = True
+with open(os.path.join(FIXTURES, 'conf.template.py'), 'r') as file_in:
+    CONF_PY = file_in.read()
 
 
 def clear_docutils_cache():
@@ -38,17 +32,28 @@ def clear_docutils_cache():
     roles._roles = {}
 
 
+def make_conf_py(extensions=None, sass_configs=None):
+    """Create a custom conf_py from a template."""
+    conf_py = CONF_PY
+    if extensions:
+        conf_py = conf_py.replace('# __extensions__', repr(extensions)[1:-1])
+    if sass_configs:
+        conf_py = conf_py.replace(
+            '# __sass_configs__', 'sass_configs = {}'.format(repr(sass_configs)))
+    return conf_py
+
+
 class TestSetup(TestCase):
 
     def setUp(self):
-        self.setUpPyfakefs()
+        self.setUpPyfakefs(
+            modules_to_reload=[sphinx.util.pycompat, sphinx.config])
         packages = [
             path for path in sys.path if path.endswith('site-packages')]
         for package in packages:
             self.fs.add_real_directory(package)
         self.fs.add_real_directory(FIXTURES)
         clear_docutils_cache()
-        disable_sphinx_loggers()
 
     def test_setup(self):
         """Extension setup adds extension options."""
@@ -59,7 +64,8 @@ class TestSetup(TestCase):
         doctreedir = builddir / '.doctrees'
         self.fs.create_dir(srcdir)
 
-        app = Sphinx(srcdir, None, builddir, doctreedir, 'html')
+        app = Sphinx(
+            srcdir, None, builddir, doctreedir, 'html', status=None, warning=None)
         setup(app)
 
         self.assertTrue(os.path.exists(builddir))
@@ -76,14 +82,18 @@ class TestSetup(TestCase):
         builddir = docs / 'build'
         doctreedir = builddir / '.doctrees'
 
-        with open(os.path.join(FIXTURES, 'conf.py'), 'r') as file_in:
-            conf = file_in.read()
-            env = {}
-            exec(conf, None, env)
-            expected = env['sass_configs']
-        self.fs.create_dir(srcdir)
+        expected = dict(
+            test=dict(
+                entry='test.scss',
+                output='test.css'
+            ))
+
+        conf_py = make_conf_py(
+            extensions=['sphinx_sass'], sass_configs=expected)
+        self.fs.create_file(srcdir / 'conf.py', contents=conf_py)
+
         app = Sphinx(
-            srcdir, FIXTURES, builddir, doctreedir, 'html')
+            srcdir, srcdir, builddir, doctreedir, 'html', status=None, warning=None)
 
         config = app.config
         self.assertTrue(os.path.exists(builddir))
