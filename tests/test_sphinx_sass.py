@@ -21,7 +21,7 @@ from sphinx.application import Sphinx
 from sphinx_sass import setup
 
 import tests.fixtures
-from tests.fixtures import test_ext1
+from tests.fixtures import test_extension1, test_extension2
 
 FIXTURES = tests.fixtures.__path__._path[0]  # pylint: disable=protected-access
 
@@ -125,10 +125,10 @@ class TestConfig(BaseSphinxTestCase):
         self.assertEqual(css_file, expected['test']['output'])
 
     def test_extension_config(self):
-        """Extension options set from another extension file."""
+        """Extension options set from another extension."""
 
         conf_py = make_conf_py(
-            extensions=['tests.fixtures.test_ext1'])
+            extensions=['tests.fixtures.test_extension1'])
         self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
@@ -137,8 +137,43 @@ class TestConfig(BaseSphinxTestCase):
         self.assertTrue(os.path.exists(self.doctreedir))
 
         config = app.config
-        ext = test_ext1
+        ext = test_extension1
         self.assertIn('sass_configs', config)
         self.assertIn(ext.CONFIG_NAME, config.sass_configs)
         self.assertDictEqual(
             ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+
+        css_file = app.registry.css_files[0][0]
+        self.assertEqual(css_file, ext.SASS_CONFIG['output'])
+
+    def test_extensions_config(self):
+        """Extension options set from multiple extensions."""
+
+        conf_py = make_conf_py(
+            extensions=[
+                'tests.fixtures.test_extension1',
+                'tests.fixtures.test_extension2',
+            ])
+        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
+
+        app = self.get_sphinx_app(confdir=self.srcdir)
+
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(self.doctreedir))
+
+        config = app.config
+        self.assertIn('sass_configs', config)
+
+        ext = test_extension1
+        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
+        self.assertDictEqual(
+            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+        css_file = app.registry.css_files[0][0]
+        self.assertEqual(css_file, ext.SASS_CONFIG['output'])
+
+        ext = test_extension2
+        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
+        self.assertDictEqual(
+            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+        css_file = app.registry.css_files[1][0]
+        self.assertEqual(css_file, ext.SASS_CONFIG['output'])

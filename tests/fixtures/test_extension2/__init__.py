@@ -6,10 +6,10 @@ import os
 
 WHERE_AM_I = os.path.abspath(os.path.dirname(__file__))
 
-CONFIG_NAME = 'test_ext1'
+CONFIG_NAME = 'test_extension2'
 SASS_CONFIG = dict(
-    entry=os.path.join(WHERE_AM_I, 'test_ext1.scss'),
-    output='test_ext1.css')
+    entry=os.path.join(WHERE_AM_I, 'test_extension2.scss'),
+    output='test_extension2.css')
 
 
 def init(app, config):
@@ -18,5 +18,6 @@ def init(app, config):
 
 def setup(app):
     """Setup up the test extension."""
-    app.setup_extension('sphinx_sass')
+    # Also set up extension 1 as a dependency.
+    app.setup_extension('tests.fixtures.test_extension1')
     app.connect('config-inited', init)
