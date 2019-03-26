@@ -21,6 +21,7 @@ from sphinx.application import Sphinx
 from sphinx_sass import setup
 
 import tests.fixtures
+from tests.fixtures import test_ext1
 
 FIXTURES = tests.fixtures.__path__._path[0]  # pylint: disable=protected-access
 
@@ -45,7 +46,8 @@ def make_conf_py(extensions=None, sass_configs=None):
     return conf_py
 
 
-class TestSetup(TestCase):
+class BaseSphinxTestCase(TestCase):
+    """Base test class helper for testing with Sphinx."""
 
     def setUp(self):
         self.setUpPyfakefs(
@@ -76,6 +78,10 @@ class TestSetup(TestCase):
         return Sphinx(
             srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
 
+
+class TestSetup(BaseSphinxTestCase):
+    """Test the setup function."""
+
     def test_setup(self):
         """Extension setup adds extension options."""
 
@@ -88,6 +94,10 @@ class TestSetup(TestCase):
         config = app.config
         self.assertIn('sass_configs', config)
         self.assertDictEqual(config.sass_configs, {})
+
+
+class TestConfig(BaseSphinxTestCase):
+    """Test the various configurations."""
 
     def test_config(self):
         """Extension options set from config file."""
@@ -113,3 +123,22 @@ class TestSetup(TestCase):
 
         css_file = app.registry.css_files[0][0]
         self.assertEqual(css_file, expected['test']['output'])
+
+    def test_extension_config(self):
+        """Extension options set from another extension file."""
+
+        conf_py = make_conf_py(
+            extensions=['tests.fixtures.test_ext1'])
+        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
+
+        app = self.get_sphinx_app(confdir=self.srcdir)
+
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(self.doctreedir))
+
+        config = app.config
+        ext = test_ext1
+        self.assertIn('sass_configs', config)
+        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
+        self.assertDictEqual(
+            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
