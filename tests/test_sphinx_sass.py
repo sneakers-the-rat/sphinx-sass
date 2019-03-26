@@ -20,7 +20,9 @@ from sphinx.application import Sphinx
 
 from sphinx_sass import setup
 
-FIXTURES = os.path.abspath(os.path.join(os.path.dirname(__file__), 'fixtures'))
+import tests.fixtures
+
+FIXTURES = tests.fixtures.__path__._path[0]  # pylint: disable=protected-access
 
 with open(os.path.join(FIXTURES, 'conf.template.py'), 'r') as file_in:
     CONF_PY = file_in.read()
@@ -55,21 +57,33 @@ class TestSetup(TestCase):
         self.fs.add_real_directory(FIXTURES)
         clear_docutils_cache()
 
+        docs = Path('docs')
+        self.srcdir = docs / 'source'
+        self.confdir = None
+        self.outdir = docs / 'build'
+        self.doctreedir = self.outdir / '.doctrees'
+
+        self.fs.create_dir(self.srcdir)
+
+    def get_sphinx_app(self, **kwargs):
+        """Helper for creating test sphinx app."""
+        srcdir = kwargs.pop('srcdir', self.srcdir)
+        confdir = kwargs.pop('confdir', self.confdir)
+        outdir = kwargs.pop('outdir', self.outdir)
+        doctreedir = kwargs.pop('doctreedir', self.doctreedir)
+        status = kwargs.pop('status', None)
+        warning = kwargs.pop('warning', None)
+        return Sphinx(
+            srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
+
     def test_setup(self):
         """Extension setup adds extension options."""
-        docs = Path(os.path.join(os.path.dirname(__file__), 'docs'))
 
-        srcdir = docs / 'source'
-        builddir = docs / 'build'
-        doctreedir = builddir / '.doctrees'
-        self.fs.create_dir(srcdir)
-
-        app = Sphinx(
-            srcdir, None, builddir, doctreedir, 'html', status=None, warning=None)
+        app = self.get_sphinx_app(confdir=None)
         setup(app)
 
-        self.assertTrue(os.path.exists(builddir))
-        self.assertTrue(os.path.exists(doctreedir))
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(self.doctreedir))
 
         config = app.config
         self.assertIn('sass_configs', config)
@@ -77,10 +91,6 @@ class TestSetup(TestCase):
 
     def test_config(self):
         """Extension options set from config file."""
-        docs = Path(os.path.join(os.path.dirname(__file__), 'docs'))
-        srcdir = docs / 'source'
-        builddir = docs / 'build'
-        doctreedir = builddir / '.doctrees'
 
         expected = dict(
             test=dict(
@@ -90,15 +100,14 @@ class TestSetup(TestCase):
 
         conf_py = make_conf_py(
             extensions=['sphinx_sass'], sass_configs=expected)
-        self.fs.create_file(srcdir / 'conf.py', contents=conf_py)
+        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
 
-        app = Sphinx(
-            srcdir, srcdir, builddir, doctreedir, 'html', status=None, warning=None)
+        app = self.get_sphinx_app(confdir=self.srcdir)
+
+        self.assertTrue(os.path.exists(self.outdir))
+        self.assertTrue(os.path.exists(self.doctreedir))
 
         config = app.config
-        self.assertTrue(os.path.exists(builddir))
-        self.assertTrue(os.path.exists(doctreedir))
-
         self.assertIn('sass_configs', config)
         self.assertDictEqual(config.sass_configs, expected)
 
