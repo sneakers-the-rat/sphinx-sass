@@ -77,7 +77,7 @@ class BaseSphinxTestCase(TestCase):
             srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
 
 
-def parse_css(css):
+def parse_css(css, raw=False):
     """Helper to parse a CSS file or string to a dictionary."""
     try:
         with open(css, 'r') as file_in:
@@ -99,4 +99,8 @@ def parse_css(css):
                     rules.selector.update(**properties)
                 else:
                     rules[selector.selectorText] = properties
-    return rules
+
+    if raw:
+        return rules, content
+    else:
+        return rules
