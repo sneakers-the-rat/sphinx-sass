@@ -6,7 +6,7 @@
 
 import os
 
-from sphinx_sass import compile_sass, setup
+from sphinx_sass import compile_sass, compile_sass_config, setup
 
 from tests.fixtures import test_extension1, test_extension2
 
@@ -119,62 +119,117 @@ class TestConfig(BaseSphinxTestCase):
 class TestCompileSass(BaseSphinxTestCase):
     """Tests for the :func:`compile_sass` function."""
 
+    def setUp(self):
+        super().setUp()
+
+        self.entry = self.srcdir / 'main.scss'
+        self.output = self.outdir / 'main.css'
+        self.create_file(
+            self.entry,
+            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
+        self.selectors = ['.document h1', '.document h2']
+
     def test_empty_entry(self):
         """No CSS written if SCSS file empty."""
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
         self.create_file(entry, contents='')
         compile_sass(entry, output, {})
-        self.assertFalse(os.path.exists(output))
+        self.assertFalse(os.path.exists(self.output))
 
     def test_css_created(self):
         """CSS file created for valid SCSS."""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
-        self.create_file(
-            entry,
-            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
-        compile_sass(entry, output, {})
-        self.assertTrue(os.path.exists(output))
+        compile_sass(self.entry, self.output, {})
+        self.assertTrue(os.path.exists(self.output))
 
-        rules = parse_css(output)
+        rules = parse_css(self.output)
         self.assertEqual(len(rules), 2)
-        for selector in ['.document h1', '.document h2']:
+        for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
 
     def test_sass_variables(self):
         """Custom SASS vars take precedence over in-file variables."""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
-        self.create_file(
-            entry,
-            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
-        compile_sass(entry, output, sass_vars=dict(color='blue'))
-        self.assertTrue(os.path.exists(output))
+        compile_sass(self.entry, self.output, sass_vars=dict(color='blue'))
+        self.assertTrue(os.path.exists(self.output))
 
-        rules = parse_css(output)
+        rules = parse_css(self.output)
         self.assertEqual(len(rules), 2)
-        for selector in ['.document h1', '.document h2']:
+        for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'blue'})
 
     def test_output_style(self):
         """Compile options output_style works"""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
-        self.create_file(
-            entry,
-            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
         compile_sass(
-            entry,
-            output,
+            self.entry,
+            self.output,
             compile_options=dict(output_style='compressed'))
-        self.assertTrue(os.path.exists(output))
+        self.assertTrue(os.path.exists(self.output))
 
-        rules, css = parse_css(output, raw=True)
+        rules, css = parse_css(self.output, raw=True)
         self.assertEqual(css.strip(), '.document h1,.document h2{color:red}')
         self.assertEqual(len(rules), 2)
-        for selector in ['.document h1', '.document h2']:
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
+    def test_source_map(self):
+        """Compile options output_style works"""
+        compile_sass(
+            self.entry,
+            self.output,
+            compile_options=dict(source_map_embed=True))
+        self.assertTrue(os.path.exists(self.output))
+
+        rules, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
+
+class TestCompileSassConfig(BaseSphinxTestCase):
+    """Tests for the compile_sass_config function."""
+
+    def setUp(self):
+        super().setUp()
+
+        self.entry = self.srcdir / 'main.scss'
+        self.output = self.outdir / 'main.css'
+        self.create_file(
+            self.entry,
+            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
+        self.selectors = ['.document h1', '.document h2']
+
+    def test_no_source_map(self):
+        """Check source_maps=False does not produce source map."""
+        config = dict(
+            entry=self.entry,
+            output=self.output)
+
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        rules, css = parse_css(self.output, raw=True)
+        self.assertNotIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
+    def test_sourcemap(self):
+        """Check source_maps=True does produces source map."""
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            source_maps=True)
+
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        rules, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})

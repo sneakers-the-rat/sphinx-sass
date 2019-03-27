@@ -20,12 +20,19 @@ def run_sass(app, _exception):
 def compile_sass_config(app, config):
     """Compile sass for a particular configuration."""
     build_dir = app.outdir
-    static_dir = app.config.html_static_path[0]
+    try:
+        static_dir = app.config.html_static_path[0]
+    except (AttributeError, IndexError):
+        static_dir = ''
     output = os.path.join(build_dir, static_dir, config['output'])
 
     compile_options = config.get('compile_options', {})
-    if config.get('source_map'):
+    if config.get('source_maps'):
         compile_options['source_map_embed'] = True
+    else:
+        compile_options = {
+            key: value for key, value in compile_options.values()
+            if not 'source' in key}
 
     compile_sass(
         str(config['entry']),
