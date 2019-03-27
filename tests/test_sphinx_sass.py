@@ -5,8 +5,14 @@
 """
 
 import os
+import unittest
 
-from sphinx_sass import compile_sass, compile_sass_config, run_sass, setup
+from sphinx_sass import (
+    compile_sass,
+    compile_sass_config,
+    run_sass,
+    setup,
+    SassConfigs)
 
 from tests.fixtures import test_extension1, test_extension2
 
@@ -14,6 +20,23 @@ from tests.helpers import (
     BaseSphinxTestCase,
     make_conf_py,
     parse_css)
+
+
+class TestSassConfigs(unittest.TestCase):
+    """Tests for the SassConfigs class."""
+
+    def test_add(self):
+        """Add configurations."""
+        configs = SassConfigs()
+        configs['key'] = {}
+        self.assertIn('key', configs)
+
+    def test_reject(self):
+        """Duplicate key raises KeyError."""
+        configs = SassConfigs()
+        configs['key'] = {}
+        with self.assertRaises(KeyError):
+            configs['key'] = {}
 
 
 class TestSetup(BaseSphinxTestCase):

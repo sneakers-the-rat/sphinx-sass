@@ -10,6 +10,16 @@ import tempfile
 import sass
 
 
+class SassConfigs(dict):
+    """Subclass of dict for holding SASS configs."""
+
+    def __setitem__(self, key, value):
+        if key in self:
+            raise KeyError(
+                'Config "{}" already in SASS configurations.'.format(key))
+        super().__setitem__(key, value)
+
+
 def run_sass(app, _exception):
     """Setup sass."""
     configs = app.config.sass_configs
@@ -88,5 +98,5 @@ def init(app):
 def setup(app):
     """Setup the app."""
     app.connect('builder-inited', init)
-    app.add_config_value('sass_configs', {}, 'env')
+    app.add_config_value('sass_configs', SassConfigs(), 'env')
     app.connect('build-finished', run_sass)
