@@ -37,23 +37,19 @@ def compile_sass(entry, output, compile_options=None, sass_vars=None):
 
     sass_vars = ['${}:{};'.format(var, val) for var, val in sass_vars.items()]
     header = '\n'.join(sass_vars)
+    header += '\n@import "{}";'.format(entry)
 
-    with open(entry, 'r') as file_in:
-        source = file_in.read()
-    if source.strip():
-        compile_options.pop('filename', None)
-        compile_options.pop('dirname', None)
-        compile_options.pop('string', None)
-        include_paths = [os.path.dirname(entry)]
-        include_paths.extend(compile_options.pop('include_paths', []))
-        css = sass.compile(
-            string=header + '\n' + source,
-            include_paths=include_paths,
-            **compile_options)
-    else:
-        css = ''
+    compile_options.pop('filename', None)
+    compile_options.pop('dirname', None)
+    compile_options.pop('string', None)
+    include_paths = [os.path.dirname(entry)]
+    include_paths.extend(compile_options.pop('include_paths', []))
+    css = sass.compile(
+        string=header,  # + '\n' + source,
+        include_paths=include_paths,
+        **compile_options)
 
-    if css:
+    if css.strip():
         with open(output, 'w') as file_out:
             file_out.write(css)
 

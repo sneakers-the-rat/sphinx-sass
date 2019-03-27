@@ -12,7 +12,7 @@ SASS_CONFIG = dict(
     output='test_extension1.css')
 
 
-def init(app, config):
+def init(_app, config):
     config.sass_configs[CONFIG_NAME] = SASS_CONFIG
 
 

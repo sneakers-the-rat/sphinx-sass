@@ -4,33 +4,26 @@
     Tests for :mod:`sphinx_sass.__init__` module.
 """
 
-import logging
 import os
 from pathlib import Path
-import sys
+import tempfile
 import unittest
 
 import cssutils
 from docutils.parsers.rst import directives, roles
-from pyfakefs.fake_filesystem_unittest import TestCase
-import sphinx.util.pycompat
-import sphinx.config
 from sphinx.application import Sphinx
 
 
-import tests.fixtures
+from .fixtures import FIXTURES
 
-
-FIXTURES = tests.fixtures.__path__._path[0]  # pylint: disable=protected-access
-
-with open(os.path.join(FIXTURES, 'conf.template.py'), 'r') as file_in:
-    CONF_PY = file_in.read()
+with open(os.path.join(FIXTURES, 'conf.template.py'), 'r') as _file_in:
+    CONF_PY = _file_in.read()
 
 
 def clear_docutils_cache():
     """Clear docutils cache for directives and roles."""
-    directives._directives = {}
-    roles._roles = {}
+    directives._directives = {}  # pylint: disable=protected-access
+    roles._roles = {}  # pylint: disable=protected-access
 
 
 def make_conf_py(extensions=None, sass_configs=None):
@@ -44,26 +37,23 @@ def make_conf_py(extensions=None, sass_configs=None):
     return conf_py
 
 
-class BaseSphinxTestCase(TestCase):
+class BaseSphinxTestCase(unittest.TestCase):
     """Base test class helper for testing with Sphinx."""
 
     def setUp(self):
-        self.setUpPyfakefs(
-            modules_to_reload=[sphinx.util.pycompat, sphinx.config])
-        packages = [
-            path for path in sys.path if path.endswith('site-packages')]
-        for package in packages:
-            self.fs.add_real_directory(package)
-        self.fs.add_real_directory(FIXTURES)
-        clear_docutils_cache()
-
-        docs = Path('docs')
+        self.tmpdir = tempfile.TemporaryDirectory()
+        tmpdir = Path(self.tmpdir.name)
+        docs = tmpdir / 'docs'
         self.srcdir = docs / 'source'
         self.confdir = None
         self.outdir = docs / 'build'
         self.doctreedir = self.outdir / '.doctrees'
+        os.makedirs(self.srcdir, exist_ok=True)
 
-        self.fs.create_dir(self.srcdir)
+        clear_docutils_cache()
+
+    def tearDown(self):
+        self.tmpdir.cleanup()
 
     def get_sphinx_app(self, **kwargs):
         """Helper for creating test sphinx app."""
@@ -75,6 +65,15 @@ class BaseSphinxTestCase(TestCase):
         warning = kwargs.pop('warning', None)
         return Sphinx(
             srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
+
+    @staticmethod
+    def create_file(path, mode='w', contents='', **kwargs):
+        try:
+            with open(path, mode, **kwargs) as file_out:
+                file_out.write(contents)
+        except TypeError:
+            with path.open(mode, **kwargs) as file_out:
+                file_out.write(contents)
 
 
 def parse_css(css, raw=False):
@@ -88,19 +87,17 @@ def parse_css(css, raw=False):
     rules = {}
     for rule in sheet:
         if rule.type == rule.STYLE_RULE:
-            selectors = [
-                selector.selectorText for selector in rule.selectorList]
+
             properties = {}
             for style in rule.style:
                 properties[style.name] = style.value
 
             for selector in rule.selectorList:
                 if selector in rules:
-                    rules.selector.update(**properties)
+                    rules[selector].update(**properties)
                 else:
                     rules[selector.selectorText] = properties
 
     if raw:
         return rules, content
-    else:
-        return rules
+    return rules

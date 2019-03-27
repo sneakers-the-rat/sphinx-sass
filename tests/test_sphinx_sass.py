@@ -4,20 +4,14 @@
     Tests for :mod:`sphinx_sass.__init__` module.
 """
 
-import logging
 import os
-from pathlib import Path
-import sys
-import unittest
 
 from sphinx_sass import compile_sass, setup
 
-import tests.fixtures
 from tests.fixtures import test_extension1, test_extension2
 
 from tests.helpers import (
     BaseSphinxTestCase,
-    clear_docutils_cache,
     make_conf_py,
     parse_css)
 
@@ -53,7 +47,7 @@ class TestConfig(BaseSphinxTestCase):
 
         conf_py = make_conf_py(
             extensions=['sphinx_sass'], sass_configs=expected)
-        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -72,7 +66,7 @@ class TestConfig(BaseSphinxTestCase):
 
         conf_py = make_conf_py(
             extensions=['tests.fixtures.test_extension1'])
-        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -97,7 +91,7 @@ class TestConfig(BaseSphinxTestCase):
                 'tests.fixtures.test_extension1',
                 'tests.fixtures.test_extension2',
             ])
-        self.fs.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -129,7 +123,7 @@ class TestCompileSass(BaseSphinxTestCase):
         """No CSS written if SCSS file empty."""
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
-        self.fs.create_file(entry, contents='')
+        self.create_file(entry, contents='')
         compile_sass(entry, output, {}, {})
         self.assertFalse(os.path.exists(output))
 
@@ -137,7 +131,7 @@ class TestCompileSass(BaseSphinxTestCase):
         """CSS file created for valid SCSS."""
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
-        self.fs.create_file(
+        self.create_file(
             entry,
             contents='$color: red !default; body { h1, h2 { color: $color; } }')
         compile_sass(entry, output, {}, {})
@@ -153,7 +147,7 @@ class TestCompileSass(BaseSphinxTestCase):
         """Custom SASS vars take precedence over in-file variables."""
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
-        self.fs.create_file(
+        self.create_file(
             entry,
             contents='$color: red !default; body { h1, h2 { color: $color; } }')
         compile_sass(entry, output, sass_vars=dict(color='blue'))
@@ -169,7 +163,7 @@ class TestCompileSass(BaseSphinxTestCase):
         """Compile options output_style works"""
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
-        self.fs.create_file(
+        self.create_file(
             entry,
             contents='$color: red !default; body { h1, h2 { color: $color; } }')
         compile_sass(
