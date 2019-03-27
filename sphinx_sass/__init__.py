@@ -26,7 +26,8 @@ def compile_sass_config(app, config):
     compile_sass(
         str(config['entry']),
         str(output),
-        config.get('compile_options', {}))
+        config.get('compile_options', {}),
+        sass_vars=config.get('sass_vars'))
 
 
 def compile_sass(entry, output, compile_options=None, sass_vars=None):
@@ -35,15 +36,13 @@ def compile_sass(entry, output, compile_options=None, sass_vars=None):
     entry = str(entry)
     output = str(output)
 
-    sass_vars = sass_vars or {}
-
     if sass_vars:
         _sass = '\n'.join(['${}:{};'.format(var, val)
                            for var, val in sass_vars.items()])
         _sass += '\n@import"{}";'.format(os.path.abspath(entry))
         with tempfile.TemporaryDirectory() as tmpdir:
             _entry = os.path.join(tmpdir, '_entry.scss')
-            with open(_entry) as file_out:
+            with open(_entry, 'w') as file_out:
                 file_out.write(_sass)
             _compile_sass(_entry, output, compile_options)
 
