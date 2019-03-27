@@ -124,7 +124,7 @@ class TestCompileSass(BaseSphinxTestCase):
         entry = self.srcdir / 'main.scss'
         output = self.outdir / 'main.css'
         self.create_file(entry, contents='')
-        compile_sass(entry, output, {}, {})
+        compile_sass(entry, output, {})
         self.assertFalse(os.path.exists(output))
 
     def test_css_created(self):
@@ -133,48 +133,12 @@ class TestCompileSass(BaseSphinxTestCase):
         output = self.outdir / 'main.css'
         self.create_file(
             entry,
-            contents='$color: red !default; body { h1, h2 { color: $color; } }')
-        compile_sass(entry, output, {}, {})
+            contents='$color: red !default; .document { h1, h2 { color: $color; } }')
+        compile_sass(entry, output, {})
         self.assertTrue(os.path.exists(output))
 
         rules = parse_css(output)
         self.assertEqual(len(rules), 2)
-        for selector in ['body h1', 'body h2']:
-            self.assertIn(selector, rules)
-            self.assertDictEqual(rules[selector], {'color': 'red'})
-
-    def test_sass_variables(self):
-        """Custom SASS vars take precedence over in-file variables."""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
-        self.create_file(
-            entry,
-            contents='$color: red !default; body { h1, h2 { color: $color; } }')
-        compile_sass(entry, output, sass_vars=dict(color='blue'))
-        self.assertTrue(os.path.exists(output))
-
-        rules = parse_css(output)
-        self.assertEqual(len(rules), 2)
-        for selector in ['body h1', 'body h2']:
-            self.assertIn(selector, rules)
-            self.assertDictEqual(rules[selector], {'color': 'blue'})
-
-    def test_output_style(self):
-        """Compile options output_style works"""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
-        self.create_file(
-            entry,
-            contents='$color: red !default; body { h1, h2 { color: $color; } }')
-        compile_sass(
-            entry,
-            output,
-            compile_options=dict(output_style='compressed'))
-        self.assertTrue(os.path.exists(output))
-
-        rules, css = parse_css(output, raw=True)
-        self.assertEqual(css.strip(), 'body h1,body h2{color:red}')
-        self.assertEqual(len(rules), 2)
-        for selector in ['body h1', 'body h2']:
+        for selector in ['.document h1', '.document h2']:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
