@@ -6,7 +6,7 @@
 
 import os
 
-from sphinx_sass import compile_sass, compile_sass_config, setup
+from sphinx_sass import compile_sass, compile_sass_config, run_sass, setup
 
 from tests.fixtures import test_extension1, test_extension2
 
@@ -233,3 +233,53 @@ class TestCompileSassConfig(BaseSphinxTestCase):
         for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
+
+
+class TestRunSass(BaseSphinxTestCase):
+    """Tests for the run_sass function."""
+
+    def test_multiple_configs(self):
+        """Multiple configs creates multiple outputs."""
+        entry1 = str(self.srcdir / 'main1.scss')
+        output1 = 'main1.css'
+        entry2 = str(self.srcdir / 'main2.scss')
+        output2 = 'main2.css'
+
+        configs = dict(
+            main1=dict(
+                entry=entry1,
+                output=output1),
+            main2=dict(
+                entry=entry2,
+                output=output2,
+                source_maps=True))
+
+        self.create_file(
+            entry1,
+            contents='.document { h1, h2 { color: red; } }')
+        self.create_file(
+            entry2,
+            contents='.document { h1, h2 { color: green; } }')
+
+        conf_py = make_conf_py(
+            extensions=['sphinx_sass'], sass_configs=configs)
+        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        app = self.get_sphinx_app(confdir=self.srcdir)
+
+        run_sass(app, None)
+
+        selectors = ['.document h1', '.document h2']
+
+        rules, css = parse_css(self.outdir / '_static' / output1, raw=True)
+        self.assertNotIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
+        rules, css = parse_css(self.outdir / '_static' / output2, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'green'})
