@@ -23,10 +23,14 @@ def compile_sass_config(app, config):
     static_dir = app.config.html_static_path[0]
     output = os.path.join(build_dir, static_dir, config['output'])
 
+    compile_options = config.get('compile_options', {})
+    if config.get('source_map'):
+        compile_options['source_map_embed'] = True
+
     compile_sass(
         str(config['entry']),
         str(output),
-        config.get('compile_options', {}),
+        compile_options,
         sass_vars=config.get('sass_vars'))
 
 
