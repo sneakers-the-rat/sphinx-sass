@@ -40,8 +40,9 @@ where each subdictionary is a separate configuration.
 - `compile_options`:
   Options passed to the `compile`
   function from [`libsass`](https://github.com/sass/libsass-python).
-  Note that source map options are
-  currently ignored.
+  Note that the `source_map_filename` option is
+  ignored: if source maps are required
+  they always be embedded.
 - `variables`:
   A dictionary which will be converted into SASS variables
   and inserted before the contents of the file specified
