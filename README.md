@@ -21,6 +21,9 @@ where each subdictionary is a separate configuration.
             compile_options=dict(
                 ...
             ),
+            variables=dict(
+                'error': '#ff0000'
+            ),
             add_css_file=False
         }
     )
@@ -39,6 +42,10 @@ where each subdictionary is a separate configuration.
   function from [`libsass`](https://github.com/sass/libsass-python).
   Note that source map options are
   currently ignored.
+- `variables`:
+  A dictionary which will be converted into SASS variables
+  and inserted before the contents of the file specified
+  in `entry`. The prefix `$` is not needed.
 - `add_css_file`:
   By default, the extension will automatically tell Sphinx
   to add a link to the compiled CSS file.

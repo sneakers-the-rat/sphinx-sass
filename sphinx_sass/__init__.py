@@ -100,7 +100,7 @@ def init(app):
     """Set up the style sheets."""
     configs = app.config.sass_configs
     for config in configs.values():
-        if config.get('stylesheet', True):
+        if config.get('add_css_file', True):
             app.add_css_file(config['output'])
 
 
