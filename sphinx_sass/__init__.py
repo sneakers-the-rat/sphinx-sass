@@ -52,6 +52,7 @@ def compile_sass(entry, output, compile_options=None, sass_vars=None):
 
 
 def _compile_sass(entry, output, compile_options):
+    """Wrapper around libsaass."""
 
     compile_options = compile_options or {}
     compile_options.pop('filename', None)
