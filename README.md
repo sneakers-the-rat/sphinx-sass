@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/mwibrow/sphinx-sass.svg?branch=master)](https://travis-ci.org/mwibrow/sphinx-sass)
 [![Coverage Status](https://coveralls.io/repos/github/mwibrow/sphinx-sass/badge.svg?branch=master)](https://coveralls.io/github/mwibrow/sphinx-sass?branch=master)
 
-**Sphinxcontrib-sass-compile** is a [Sphinx](http://www.sphinx-doc.org/en/master/) extension
+**Sphinx-sass** is a [Sphinx](http://www.sphinx-doc.org/en/master/) extension
 which enables compilation of [SASS](https://sass-lang.com/) and SCSS files to CSS
 when generating Sphinx documentation.
 
@@ -62,7 +62,7 @@ Configuration names must be unique.
 
 ### Configuration from an extension.
 
-To use `sass_compile` in an extension,
+To use **sphinx-sass** in an extension,
 it is necessary to connect to the `config-inited`
 event (note this only available from Sphinx v1.8):
 
@@ -81,12 +81,12 @@ in `conf.py`, except that the
 
 ### Notes
 
-- **sass_compile** uses the first
+- **Sphinx-sass** uses the first
   entry in the configuration variable `html_static_path`, if it exists.
 - Compiled CSS files are written directly to
   the build directory just before Sphinx
   exits (during the `build-finished`) event.
-- **sass_compile** is pre-alpha. It should just work as is, but bugs are likely and anything or everything may change with absolutely no warning.
+- **Sphinx-sass** is pre-alpha. It should just work as is, but bugs are likely and anything or everything may change with absolutely no warning.
 
 # Acknowledgements
 
