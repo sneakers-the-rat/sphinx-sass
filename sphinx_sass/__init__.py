@@ -63,10 +63,10 @@ def compile_sass_config(app, config):
         str(config['entry']),
         str(output),
         compile_options,
-        sass_vars=config.get('sass_vars'))
+        variables=config.get('variables'))
 
 
-def compile_sass(entry, output, compile_options=None, sass_vars=None):
+def compile_sass(entry, output, compile_options=None, variables=None):
     """Compile sass."""
 
     entry = str(entry)
@@ -81,9 +81,9 @@ def compile_sass(entry, output, compile_options=None, sass_vars=None):
     compile_options['include_paths'] = include_paths
 
     css, header = '', ''
-    if sass_vars:
+    if variables:
         header = '\n'.join(['${}:{};'.format(var, val)
-                            for var, val in sass_vars.items()])
+                            for var, val in variables.items()])
         header += '\n@import"{}";\n'.format(os.path.abspath(entry))
 
         with open(entry, 'r') as file_in:

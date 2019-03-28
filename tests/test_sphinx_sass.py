@@ -176,7 +176,7 @@ class TestCompileSass(BaseSphinxTestCase):
 
     def test_sass_variables(self):
         """Custom SASS vars take precedence over in-file variables."""
-        compile_sass(self.entry, self.output, sass_vars=dict(color='blue'))
+        compile_sass(self.entry, self.output, variables=dict(color='blue'))
         self.assertTrue(os.path.exists(self.output))
 
         rules = parse_css(self.output)
