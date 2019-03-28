@@ -1,6 +1,5 @@
 # Sphinxcontrib-sass-compile
 
-|build status| |coverage|
 
 **Sphinxcontrib-sass-compile** is a [Sphinx](http://www.sphinx-doc.org/en/master/) extension
 which enables compilation of [SASS](https://sass-lang.com/) and SCSS files to CSS
@@ -91,9 +90,3 @@ in `conf.py`, except that the
 
 This extension makes use of the
 rather excellent [`libsass`](https://github.com/sass/libsass-python) package.
-
-.. |build status| .. image:: https://travis-ci.org/mwibrow/sphinx-sass.svg?branch=master
-    :target: https://travis-ci.org/mwibrow/sphinx-sass
-
-.. |coverage| image:: https://coveralls.io/repos/github/mwibrow/sphinx-sass/badge.svg
-    :target: https://coveralls.io/github/sphinx-sass/vlnm
