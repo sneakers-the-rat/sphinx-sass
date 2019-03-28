@@ -5,7 +5,6 @@
 """
 
 import os
-from pathlib import Path
 import tempfile
 import unittest
 
@@ -42,13 +41,13 @@ class BaseSphinxTestCase(unittest.TestCase):
 
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory()
-        tmpdir = Path(self.tmpdir.name)
-        docs = tmpdir / 'docs'
-        self.srcdir = docs / 'source'
+        tmpdir = self.tmpdir.name
+        docs = os.path.join(tmpdir, 'docs')
+        self.srcdir = os.path.join(docs, 'source')
         self.confdir = None
-        self.outdir = docs / 'build'
-        self.doctreedir = self.outdir / '.doctrees'
-        os.makedirs(str(self.srcdir), exist_ok=True)
+        self.outdir = os.path.join(docs, 'build')
+        self.doctreedir = os.path.join(self.outdir, '.doctrees')
+        os.makedirs(self.srcdir, exist_ok=True)
 
         clear_docutils_cache()
 
@@ -64,16 +63,15 @@ class BaseSphinxTestCase(unittest.TestCase):
         status = kwargs.pop('status', None)
         warning = kwargs.pop('warning', None)
         return Sphinx(
-            srcdir, confdir, outdir, doctreedir, 'html', status=status, warning=warning, **kwargs)
+            srcdir,
+            confdir,
+            outdir,
+            doctreedir, 'html', status=status, warning=warning, **kwargs)
 
     @staticmethod
     def create_file(path, mode='w', contents='', **kwargs):
-        try:
-            with open(path, mode, **kwargs) as file_out:
-                file_out.write(contents)
-        except TypeError:
-            with path.open(mode, **kwargs) as file_out:
-                file_out.write(contents)
+        with open(path, mode, **kwargs) as file_out:
+            file_out.write(contents)
 
 
 def parse_css(css, raw=False):

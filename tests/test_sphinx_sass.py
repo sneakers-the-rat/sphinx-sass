@@ -70,7 +70,8 @@ class TestConfig(BaseSphinxTestCase):
 
         conf_py = make_conf_py(
             extensions=['sphinx_sass'], sass_configs=expected)
-        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(
+            os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -89,7 +90,8 @@ class TestConfig(BaseSphinxTestCase):
 
         conf_py = make_conf_py(
             extensions=['tests.fixtures.test_extension1'])
-        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(
+            os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -114,7 +116,8 @@ class TestConfig(BaseSphinxTestCase):
                 'tests.fixtures.test_extension1',
                 'tests.fixtures.test_extension2',
             ])
-        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(
+            os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
 
         app = self.get_sphinx_app(confdir=self.srcdir)
 
@@ -145,8 +148,8 @@ class TestCompileSass(BaseSphinxTestCase):
     def setUp(self):
         super().setUp()
 
-        self.entry = self.srcdir / 'main.scss'
-        self.output = self.outdir / 'main.css'
+        self.entry = os.path.join(self.srcdir, 'main.scss')
+        self.output = os.path.join(self.outdir, 'main.css')
         self.create_file(
             self.entry,
             contents='$color: red !default; .document { h1, h2 { color: $color; } }')
@@ -154,8 +157,8 @@ class TestCompileSass(BaseSphinxTestCase):
 
     def test_empty_entry(self):
         """No CSS written if SCSS file empty."""
-        entry = self.srcdir / 'main.scss'
-        output = self.outdir / 'main.css'
+        entry = os.path.join(self.srcdir, 'main.scss')
+        output = os.path.join(self.outdir, 'main.css')
         self.create_file(entry, contents='')
         compile_sass(entry, output, {})
         self.assertFalse(os.path.exists(self.output))
@@ -219,8 +222,8 @@ class TestCompileSassConfig(BaseSphinxTestCase):
     def setUp(self):
         super().setUp()
 
-        self.entry = self.srcdir / 'main.scss'
-        self.output = self.outdir / 'main.css'
+        self.entry = os.path.join(self.srcdir, 'main.scss')
+        self.output = os.path.join(self.outdir, 'main.css')
         self.create_file(
             self.entry,
             contents='$color: red !default; .document { h1, h2 { color: $color; } }')
@@ -289,9 +292,9 @@ class TestRunSass(BaseSphinxTestCase):
 
     def test_multiple_configs(self):
         """Multiple configs creates multiple outputs."""
-        entry1 = str(self.srcdir / 'main1.scss')
+        entry1 = os.path.join(self.srcdir, 'main1.scss')
         output1 = 'main1.css'
-        entry2 = str(self.srcdir / 'main2.scss')
+        entry2 = os.path.join(self.srcdir, 'main2.scss')
         output2 = 'main2.css'
 
         configs = dict(
@@ -312,21 +315,24 @@ class TestRunSass(BaseSphinxTestCase):
 
         conf_py = make_conf_py(
             extensions=['sphinx_sass'], sass_configs=configs)
-        self.create_file(self.srcdir / 'conf.py', contents=conf_py)
+        self.create_file(
+            os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
         app = self.get_sphinx_app(confdir=self.srcdir)
 
         run_sass(app, None)
 
         selectors = ['.document h1', '.document h2']
 
-        rules, css = parse_css(self.outdir / '_static' / output1, raw=True)
+        rules, css = parse_css(
+            os.path.join(self.outdir, '_static', output1), raw=True)
         self.assertNotIn('sourceMappingURL', css)
         self.assertEqual(len(rules), 2)
         for selector in selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
 
-        rules, css = parse_css(self.outdir / '_static' / output2, raw=True)
+        rules, css = parse_css(
+            os.path.join(self.outdir, '_static', output2), raw=True)
         self.assertIn('sourceMappingURL', css)
         self.assertEqual(len(rules), 2)
         for selector in selectors:

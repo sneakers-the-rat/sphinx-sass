@@ -16,7 +16,7 @@ def lint(session):
     session.run('pylint', 'sphinx_sass', 'tests')
 
 
-@nox.session(python=['3.4', '3.5', '3.6', '3.7'])
+@nox.session(python=['3.6'])
 def test(session):
     """
     Test
