@@ -1,4 +1,4 @@
-# Sphinxcontrib-sass-compile
+# Sphinx-sass
 
 [![Build Status](https://travis-ci.org/mwibrow/sphinx-sass.svg?branch=master)](https://travis-ci.org/mwibrow/sphinx-sass)
 [![Coverage Status](https://coveralls.io/repos/github/mwibrow/sphinx-sass/badge.svg?branch=master)](https://coveralls.io/github/mwibrow/sphinx-sass?branch=master)
