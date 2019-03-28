@@ -48,7 +48,7 @@ class BaseSphinxTestCase(unittest.TestCase):
         self.confdir = None
         self.outdir = docs / 'build'
         self.doctreedir = self.outdir / '.doctrees'
-        os.makedirs(self.srcdir, exist_ok=True)
+        os.makedirs(str(self.srcdir), exist_ok=True)
 
         clear_docutils_cache()
 
