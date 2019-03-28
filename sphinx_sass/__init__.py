@@ -10,6 +10,16 @@ import tempfile
 import sass
 
 
+LIBSASS_SUPPORTED_COMPILE_OPTIONS = [
+    'output_style',
+    'include_paths',
+    'precision',
+    'custom_functions',
+    'indented',
+    'importers'
+]
+
+
 class SassConfigs(dict):
     """Subclass of dict for holding SASS configs."""
 
@@ -37,12 +47,17 @@ def compile_sass_config(app, config):
     output = os.path.join(build_dir, static_dir, config['output'])
 
     compile_options = config.get('compile_options', {})
-    if config.get('source_maps'):
-        compile_options['source_map_embed'] = True
-    else:
-        compile_options = {
-            key: value for key, value in compile_options.values()
-            if not 'source' in key}
+    compile_options = {
+        key: compile_options[key] for key in LIBSASS_SUPPORTED_COMPILE_OPTIONS
+        if key in compile_options}
+
+    try:
+        source_maps_env = int(os.getenv('SPHINX_SASS_SOURCE_MAPS', None))
+        if source_maps_env:
+            compile_options['source_map_embed'] = True
+    except (TypeError, ValueError):
+        if config.get('source_maps'):
+            compile_options['source_map_embed'] = True
 
     compile_sass(
         str(config['entry']),

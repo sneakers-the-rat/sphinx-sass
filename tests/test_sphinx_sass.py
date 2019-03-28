@@ -257,6 +257,32 @@ class TestCompileSassConfig(BaseSphinxTestCase):
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
 
+    def test_no_source_maps_override(self):
+        """Source maps not produced when environment variable overides sources_maps key."""
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            source_maps=True)
+        os.environ['SPHINX_SASS_SOURCE_MAPS'] = '0'
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        _, css = parse_css(self.output, raw=True)
+        self.assertNotIn('sourceMappingURL', css)
+        del os.environ['SPHINX_SASS_SOURCE_MAPS']
+
+    def test_source_maps_override(self):
+        """Source maps produced when environment variable overides sources_maps key."""
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            source_maps=False)
+        os.environ['SPHINX_SASS_SOURCE_MAPS'] = '1'
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        _, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        del os.environ['SPHINX_SASS_SOURCE_MAPS']
+
 
 class TestRunSass(BaseSphinxTestCase):
     """Tests for the run_sass function."""
