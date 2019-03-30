@@ -5,6 +5,7 @@
 """
 
 import os
+import re
 import tempfile
 import unittest
 
@@ -47,6 +48,7 @@ class BaseSphinxTestCase(unittest.TestCase):
         self.confdir = None
         self.outdir = os.path.join(docs, 'build')
         self.doctreedir = os.path.join(self.outdir, '.doctrees')
+        self.staticdir = '_static'
         os.makedirs(self.srcdir, exist_ok=True)
 
         clear_docutils_cache()
@@ -99,3 +101,15 @@ def parse_css(css, raw=False):
     if raw:
         return rules, content
     return rules
+
+
+def get_source_mapping_url(css):
+    """Extract the sourceMappingURL from a css string."""
+    # /*# sourceMappingURL=main.scss.map */
+    match = re.search(
+        r'^\s*/\*# sourceMappingURL=(.*?)\s*\*/',
+        css,
+        flags=re.RegexFlag.MULTILINE | re.RegexFlag.IGNORECASE)
+    if match:
+        return match.groups()[0]
+    return None

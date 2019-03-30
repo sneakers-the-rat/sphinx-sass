@@ -4,20 +4,12 @@
 
 """
 
+from contextlib import contextmanager
 import os
+from pathlib import Path
 import tempfile
 
 import sass
-
-
-LIBSASS_SUPPORTED_COMPILE_OPTIONS = [
-    'output_style',
-    'include_paths',
-    'precision',
-    'custom_functions',
-    'indented',
-    'importers'
-]
 
 
 class SassConfigs(dict):
@@ -30,6 +22,17 @@ class SassConfigs(dict):
         super().__setitem__(key, value)
 
 
+@contextmanager
+def chdir(path):
+    """Temporarity change the working directory."""
+    curdir = os.path.abspath(os.curdir)
+    try:
+        os.chdir(str(path))
+        yield
+    finally:
+        os.chdir(curdir)
+
+
 def run_sass(app, _exception):
     """Setup sass."""
     configs = app.config.sass_configs
@@ -39,67 +42,80 @@ def run_sass(app, _exception):
 
 def compile_sass_config(app, config):
     """Compile sass for a particular configuration."""
-    build_dir = app.outdir
+    build_dir = Path(app.outdir)
     try:
         static_dir = app.config.html_static_path[0]
     except (AttributeError, IndexError):
         static_dir = ''
-    output = os.path.join(build_dir, static_dir, config['output'])
+
+    entry = Path(config['entry'])
+    if not entry.is_absolute():
+        entry = Path(app.confdir) / config['entry']
+    css_output = build_dir / static_dir / config['output']
+    srcmap_output = ''
 
     compile_options = config.get('compile_options', {})
-    compile_options = {
-        key: compile_options[key] for key in LIBSASS_SUPPORTED_COMPILE_OPTIONS
-        if key in compile_options}
 
-    try:
-        source_maps_env = int(os.getenv('SPHINX_SASS_SOURCE_MAPS', None))
-        if source_maps_env:
+    source_map = config.get('source_map', '').lower()
+    if source_map in ['embed', 'file']:
+        compile_options = {key: value for key, value in compile_options if not 'source' in key}
+        compile_options['source_map_root'] = 'file://{}'.format(str(entry.parent))
+        if source_map == 'file':
+            compile_options['source_map_filename'] = '{}{}map'.format(
+                css_output.name, os.path.extsep)
+        elif source_map == 'embed':
             compile_options['source_map_embed'] = True
-    except (TypeError, ValueError):
-        if config.get('source_maps'):
+
+    # Sanitize source_map_filename options.
+    srcmap_filename = compile_options.get('source_map_filename')
+    if srcmap_filename:
+        srcmap_output = css_output.parent / srcmap_filename
+
+    # Environment variable overrides.
+    if 'SPHINX_SASS_SOURCE_MAPS' in os.environ:
+        source_maps = os.environ['SPHINX_SASS_SOURCE_MAPS'].lower() in ['y', 'yes', 'true', '1']
+        if source_maps and not srcmap_filename:
             compile_options['source_map_embed'] = True
+        else:
+            compile_options = {
+                key: value for key, value in compile_options
+                if not 'source' in key}
 
-    compile_sass(
-        str(config['entry']),
-        str(output),
-        compile_options,
-        variables=config.get('variables'))
+    css, srcmap = compile_sass(
+        entry,
+        compile_options)
+
+    if css:
+        if not css_output.parent.exists():
+            css_output.parent.mkdir(parents=True)
+        with css_output.open('w') as file_out:
+            file_out.write(css)
+
+    if srcmap and srcmap_output:
+        if not srcmap_output.parent.exists():
+            srcmap_output.parent.mkdir(parents=True)
+        with open(srcmap_output, 'w') as file_out:
+            file_out.write(srcmap)
 
 
-def compile_sass(entry, output, compile_options=None, variables=None):
+def compile_sass(entry, compile_options=None):
     """Compile sass."""
 
-    entry = str(entry)
-    output = str(output)
+    entry = Path(entry).resolve()  # Just in case we get a pathlib.Path object.
     compile_options = compile_options or {}
 
-    for option in ['filename', 'string', 'filename', 'source_map_filename']:
+    for option in ['filename', 'string', 'filename']:
         compile_options.pop(option, None)
 
-    include_paths = [os.path.dirname(entry)]
-    include_paths.extend(compile_options.pop('include_paths', []))
-    compile_options['include_paths'] = include_paths
+    css, srcmap = '', ''
 
-    css, header = '', ''
-    if variables:
-        header = '\n'.join(['${}:{};'.format(var, val)
-                            for var, val in variables.items()])
-        header += '\n@import"{}";\n'.format(os.path.abspath(entry))
+    with chdir(entry.parent):
+        if compile_options.get('source_map_filename'):
+            css, srcmap = sass.compile(filename=entry.name, **compile_options)
+        else:
+            css = sass.compile(filename=entry.name, **compile_options)
 
-        with open(entry, 'r') as file_in:
-            source = file_in.read()
-
-        css = ''
-        if source.strip():
-            source = header + source
-            css = sass.compile(string=source, **compile_options)
-    else:
-        css = sass.compile(filename=entry, **compile_options)
-
-    if css.strip():
-        os.makedirs(os.path.dirname(output), exist_ok=True)
-        with open(output, 'w') as file_out:
-            file_out.write(css)
+    return css, srcmap
 
 
 def init(app):
@@ -112,6 +128,6 @@ def init(app):
 
 def setup(app):
     """Setup the app."""
-    app.connect('builder-inited', init)
     app.add_config_value('sass_configs', SassConfigs(), 'env')
+    app.connect('builder-inited', init)
     app.connect('build-finished', run_sass)

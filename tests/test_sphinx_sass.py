@@ -8,6 +8,7 @@ import os
 import unittest
 
 from sphinx_sass import (
+    chdir,
     compile_sass,
     compile_sass_config,
     run_sass,
@@ -18,6 +19,7 @@ from tests.fixtures import test_extension1, test_extension2
 
 from tests.helpers import (
     BaseSphinxTestCase,
+    get_source_mapping_url,
     make_conf_py,
     parse_css)
 
@@ -65,7 +67,7 @@ class TestConfig(BaseSphinxTestCase):
         expected = dict(
             test=dict(
                 entry='test.scss',
-                output='test.css'
+                output='test.css',
             ))
 
         conf_py = make_conf_py(
@@ -158,62 +160,64 @@ class TestCompileSass(BaseSphinxTestCase):
     def test_empty_entry(self):
         """No CSS written if SCSS file empty."""
         entry = os.path.join(self.srcdir, 'main.scss')
-        output = os.path.join(self.outdir, 'main.css')
         self.create_file(entry, contents='')
-        compile_sass(entry, output, {})
-        self.assertFalse(os.path.exists(self.output))
+        css, srcmap = compile_sass(entry)
 
-    def test_css_created(self):
-        """CSS file created for valid SCSS."""
-        compile_sass(self.entry, self.output, {})
-        self.assertTrue(os.path.exists(self.output))
+        self.assertFalse(css)
+        self.assertFalse(srcmap)
 
-        rules = parse_css(self.output)
+    def test_css_emited(self):
+        """CSS created for valid SCSS."""
+        css, srcmap = compile_sass(self.entry)
+
+        rules = parse_css(css)
         self.assertEqual(len(rules), 2)
         for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
-
-    def test_sass_variables(self):
-        """Custom SASS vars take precedence over in-file variables."""
-        compile_sass(self.entry, self.output, variables=dict(color='blue'))
-        self.assertTrue(os.path.exists(self.output))
-
-        rules = parse_css(self.output)
-        self.assertEqual(len(rules), 2)
-        for selector in self.selectors:
-            self.assertIn(selector, rules)
-            self.assertDictEqual(rules[selector], {'color': 'blue'})
+        self.assertFalse(srcmap)
 
     def test_output_style(self):
         """Compile options output_style works"""
-        compile_sass(
+        css, srcmap = compile_sass(
             self.entry,
-            self.output,
             compile_options=dict(output_style='compressed'))
-        self.assertTrue(os.path.exists(self.output))
 
-        rules, css = parse_css(self.output, raw=True)
+        rules = parse_css(css)
         self.assertEqual(css.strip(), '.document h1,.document h2{color:red}')
         self.assertEqual(len(rules), 2)
         for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
+        self.assertFalse(srcmap)
 
-    def test_source_map(self):
-        """Compile options output_style works"""
-        compile_sass(
+    def test_interal_source_map(self):
+        """Compile embedded source map"""
+        css, srcmap = compile_sass(
             self.entry,
-            self.output,
             compile_options=dict(source_map_embed=True))
-        self.assertTrue(os.path.exists(self.output))
 
-        rules, css = parse_css(self.output, raw=True)
+        rules = parse_css(css)
         self.assertIn('sourceMappingURL', css)
         self.assertEqual(len(rules), 2)
         for selector in self.selectors:
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
+        self.assertFalse(srcmap)
+
+    def test_external_source_map(self):
+        """Compile external source map"""
+        css, srcmap = compile_sass(
+            self.entry,
+            compile_options=dict(source_map_filename='main.css.map'))
+
+        rules = parse_css(css)
+        self.assertIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+        self.assertGreater(len(srcmap), 0)
 
 
 class TestCompileSassConfig(BaseSphinxTestCase):
@@ -229,8 +233,31 @@ class TestCompileSassConfig(BaseSphinxTestCase):
             contents='$color: red !default; .document { h1, h2 { color: $color; } }')
         self.selectors = ['.document h1', '.document h2']
 
+    def test_relative_entry_path(self):
+        """Test relative entry path."""
+
+        entry = os.path.basename(self.entry)
+        with chdir(os.path.dirname(self.entry)):
+            self.create_file(
+                entry,
+                contents='$color: red !default; .document { h1, h2 { color: $color; } }')
+
+        config = dict(
+            entry=entry,
+            output=self.output)
+
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        self.assertTrue(os.path.exists(self.output))
+        rules, css = parse_css(self.output, raw=True)
+        self.assertNotIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
     def test_no_source_map(self):
-        """Check source_maps=False does not produce source map."""
+        """Check defaults do not produce source map."""
         config = dict(
             entry=self.entry,
             output=self.output)
@@ -244,12 +271,12 @@ class TestCompileSassConfig(BaseSphinxTestCase):
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
 
-    def test_sourcemap(self):
-        """Check source_maps=True does produces source map."""
+    def test_embedded_source_map(self):
+        """Check embeded source map produced."""
         config = dict(
             entry=self.entry,
             output=self.output,
-            source_maps=True)
+            compile_options=dict(source_map_embed=True))
 
         app = self.get_sphinx_app()
         compile_sass_config(app, config)
@@ -260,12 +287,78 @@ class TestCompileSassConfig(BaseSphinxTestCase):
             self.assertIn(selector, rules)
             self.assertDictEqual(rules[selector], {'color': 'red'})
 
-    def test_no_source_maps_override(self):
-        """Source maps not produced when environment variable overides sources_maps key."""
+    def test_external_source_maps(self):
+        """Check external source maps produced"""
         config = dict(
             entry=self.entry,
             output=self.output,
-            source_maps=True)
+            compile_options=dict(
+                source_map_filename='main.css.map'
+            ))
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        _, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertTrue(os.path.exists(
+            os.path.join(os.path.dirname(self.output), 'main.css.map')))
+
+    def test_external_source_maps_different_path(self):
+        """Check external source maps produced with different path"""
+
+        source_map_filename = os.path.join('maps', 'main.css.map')
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            compile_options=dict(
+                source_map_filename=source_map_filename
+            ))
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+
+        _, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+
+        srcmap_url = get_source_mapping_url(css)
+        self.assertEqual(srcmap_url, source_map_filename)
+
+        self.assertTrue(os.path.exists(
+            os.path.join(
+                os.path.dirname(self.output), source_map_filename)))
+
+    def test_embedded_source_map_config(self):
+        """Check embeded source map produced using config option"""
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            source_map='embed')
+
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        rules, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertEqual(len(rules), 2)
+        for selector in self.selectors:
+            self.assertIn(selector, rules)
+            self.assertDictEqual(rules[selector], {'color': 'red'})
+
+    def test_external_source_maps_config(self):
+        """Check external source maps produced using config option"""
+        config = dict(
+            entry=self.entry,
+            output=self.output,
+            source_map='file')
+        app = self.get_sphinx_app()
+        compile_sass_config(app, config)
+        _, css = parse_css(self.output, raw=True)
+        self.assertIn('sourceMappingURL', css)
+        self.assertTrue(os.path.exists(
+            os.path.join(os.path.dirname(self.output), 'main.css.map')))
+
+    def test_no_source_maps_override(self):
+        """Source maps not produced when environment variable overides compile options"""
+        config = dict(
+            entry=self.entry,
+            output=self.output)
         os.environ['SPHINX_SASS_SOURCE_MAPS'] = '0'
         app = self.get_sphinx_app()
         compile_sass_config(app, config)
@@ -274,11 +367,13 @@ class TestCompileSassConfig(BaseSphinxTestCase):
         del os.environ['SPHINX_SASS_SOURCE_MAPS']
 
     def test_source_maps_override(self):
-        """Source maps produced when environment variable overides sources_maps key."""
+        """Source maps produced when environment variable overides compile options"""
         config = dict(
             entry=self.entry,
             output=self.output,
-            source_maps=False)
+            compile_options=dict(
+                source_map_embed=True
+            ))
         os.environ['SPHINX_SASS_SOURCE_MAPS'] = '1'
         app = self.get_sphinx_app()
         compile_sass_config(app, config)
@@ -304,7 +399,8 @@ class TestRunSass(BaseSphinxTestCase):
             main2=dict(
                 entry=entry2,
                 output=output2,
-                source_maps=True))
+                compile_options=dict(
+                    source_map_embed=True)))
 
         self.create_file(
             entry1,
