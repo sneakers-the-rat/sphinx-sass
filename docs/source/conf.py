@@ -16,6 +16,12 @@
 #
 import os
 import sys
+
+from pygments.lexers.css import ScssLexer
+from pygments.lexers.css import default, Keyword, Name
+
+from sphinx.highlighting import lexers
+
 sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 
@@ -86,7 +92,10 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    'nosidebar': True,
+    'description': 'Compile SASS to CSS with Sphinx',
+    'fixed_sidebar': True,
+    'github_repo': 'sphinx-sass',
+    'github_user': 'mwibrow'
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -102,7 +111,13 @@ html_static_path = ['_static']
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
+html_sidebars = {
+    '*': [
+        'about.html',
+        'statusbadges.html',
+        'searchbox.html',
+    ]
+}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -182,10 +197,30 @@ epub_exclude_files = ['search.html']
 
 # -- Extension configuration -------------------------------------------------
 
-sass_configs = {
-    'docs': dict(
+sass_configs = [
+    dict(
         entry='_style/main.scss',
         output='styles/sphinx_sass.css',
         source_map='file'
-    )
-}
+    )]
+
+# -- Custom lexer ------------------------------------------------------------
+
+
+class ScssLexer2(ScssLexer):
+    """
+    For SCSS stylesheets.
+    """
+
+    name = 'SCSS2'
+    aliases = ['scss2']
+    filenames = ['*.scss']
+    mimetypes = ['text/x-scss']
+
+    tokens = ScssLexer.tokens
+    tokens['pseudo-class'][-1] = default('value')
+    tokens['value'].insert(1, (r'[!][\w-]+', Keyword))
+    tokens['value'].insert(1, (r'[$][\w-]+', Name.Variable))
+
+
+lexers['scss2'] = ScssLexer2(startinline=True)

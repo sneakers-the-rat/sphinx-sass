@@ -9,17 +9,9 @@ import os
 from pathlib import Path
 import tempfile
 
-import sass
+import sass  # pylint: disable=all
 
-
-class SassConfigs(dict):
-    """Subclass of dict for holding SASS configs."""
-
-    def __setitem__(self, key, value):
-        if key in self:
-            raise KeyError(
-                'Config "{}" already in SASS configurations.'.format(key))
-        super().__setitem__(key, value)
+__version__ = '0.0.0'
 
 
 @contextmanager
@@ -36,7 +28,7 @@ def chdir(path):
 def run_sass(app, _exception):
     """Setup sass."""
     configs = app.config.sass_configs
-    for config in configs.values():
+    for config in configs:
         compile_sass_config(app, config)
 
 
@@ -121,13 +113,13 @@ def compile_sass(entry, compile_options=None):
 def init(app):
     """Set up the style sheets."""
     configs = app.config.sass_configs
-    for config in configs.values():
+    for config in configs:
         if config.get('add_css_file', True):
             app.add_css_file(config['output'])
 
 
 def setup(app):
     """Setup the app."""
-    app.add_config_value('sass_configs', SassConfigs(), 'env')
+    app.add_config_value('sass_configs', [], 'env')
     app.connect('builder-inited', init)
     app.connect('build-finished', run_sass)

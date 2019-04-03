@@ -7,4 +7,3 @@ pylint==2.3.0
 pytest-cov==2.6.0
 pytest==3.8.0
 sphinx-autobuild==0.7.1
-Sphinx==1.8.0

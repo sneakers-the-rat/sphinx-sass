@@ -5,15 +5,13 @@
 """
 
 import os
-import unittest
 
-from sphinx_sass import (
+from sphinxcontrib.sass import (
     chdir,
     compile_sass,
     compile_sass_config,
     run_sass,
-    setup,
-    SassConfigs)
+    setup)
 
 from tests.fixtures import test_extension1, test_extension2
 
@@ -22,23 +20,6 @@ from tests.helpers import (
     get_source_mapping_url,
     make_conf_py,
     parse_css)
-
-
-class TestSassConfigs(unittest.TestCase):
-    """Tests for the SassConfigs class."""
-
-    def test_add(self):
-        """Add configurations."""
-        configs = SassConfigs()
-        configs['key'] = {}
-        self.assertIn('key', configs)
-
-    def test_reject(self):
-        """Duplicate key raises KeyError."""
-        configs = SassConfigs()
-        configs['key'] = {}
-        with self.assertRaises(KeyError):
-            configs['key'] = {}
 
 
 class TestSetup(BaseSphinxTestCase):
@@ -55,7 +36,7 @@ class TestSetup(BaseSphinxTestCase):
 
         config = app.config
         self.assertIn('sass_configs', config)
-        self.assertDictEqual(config.sass_configs, {})
+        self.assertCountEqual(config.sass_configs, [])
 
 
 class TestConfig(BaseSphinxTestCase):
@@ -64,14 +45,10 @@ class TestConfig(BaseSphinxTestCase):
     def test_config(self):
         """Extension options set from config file."""
 
-        expected = dict(
-            test=dict(
-                entry='test.scss',
-                output='test.css',
-            ))
+        expected = dict(entry='test.scss', output='test.css')
 
         conf_py = make_conf_py(
-            extensions=['sphinx_sass'], sass_configs=expected)
+            extensions=['sphinxcontrib.sass'], sass_configs=[expected])
         self.create_file(
             os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
 
@@ -82,10 +59,10 @@ class TestConfig(BaseSphinxTestCase):
 
         config = app.config
         self.assertIn('sass_configs', config)
-        self.assertDictEqual(config.sass_configs, expected)
+        self.assertIn(expected, config.sass_configs)
 
         css_file = app.registry.css_files[0][0]
-        self.assertEqual(css_file, expected['test']['output'])
+        self.assertEqual(css_file, expected['output'])
 
     def test_extension_config(self):
         """Extension options set from another extension."""
@@ -103,9 +80,7 @@ class TestConfig(BaseSphinxTestCase):
         config = app.config
         ext = test_extension1
         self.assertIn('sass_configs', config)
-        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
-        self.assertDictEqual(
-            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+        self.assertIn(ext.SASS_CONFIG, config.sass_configs)
 
         css_file = app.registry.css_files[0][0]
         self.assertEqual(css_file, ext.SASS_CONFIG['output'])
@@ -130,16 +105,12 @@ class TestConfig(BaseSphinxTestCase):
         self.assertIn('sass_configs', config)
 
         ext = test_extension1
-        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
-        self.assertDictEqual(
-            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+        self.assertIn(ext.SASS_CONFIG, config.sass_configs)
         css_file = app.registry.css_files[0][0]
         self.assertEqual(css_file, ext.SASS_CONFIG['output'])
 
         ext = test_extension2
-        self.assertIn(ext.CONFIG_NAME, config.sass_configs)
-        self.assertDictEqual(
-            ext.SASS_CONFIG, config.sass_configs[ext.CONFIG_NAME])
+        self.assertIn(ext.SASS_CONFIG, config.sass_configs)
         css_file = app.registry.css_files[1][0]
         self.assertEqual(css_file, ext.SASS_CONFIG['output'])
 
@@ -392,15 +363,15 @@ class TestRunSass(BaseSphinxTestCase):
         entry2 = os.path.join(self.srcdir, 'main2.scss')
         output2 = 'main2.css'
 
-        configs = dict(
-            main1=dict(
+        configs = [
+            dict(
                 entry=entry1,
                 output=output1),
-            main2=dict(
+            dict(
                 entry=entry2,
                 output=output2,
                 compile_options=dict(
-                    source_map_embed=True)))
+                    source_map_embed=True))]
 
         self.create_file(
             entry1,
@@ -410,7 +381,7 @@ class TestRunSass(BaseSphinxTestCase):
             contents='.document { h1, h2 { color: green; } }')
 
         conf_py = make_conf_py(
-            extensions=['sphinx_sass'], sass_configs=configs)
+            extensions=['sphinxcontrib.sass'], sass_configs=configs)
         self.create_file(
             os.path.join(self.srcdir, 'conf.py'), contents=conf_py)
         app = self.get_sphinx_app(confdir=self.srcdir)
