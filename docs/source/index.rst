@@ -16,7 +16,7 @@ To install |package-name| use:
 
 .. code:: bash
 
-   pip install sphinxcontrib-sass
+   pip install sphinx-sass
 
 Usage
 -----
@@ -27,7 +27,7 @@ Configuration from ``conf.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To configure the extension from ``conf.py``
-add ``'sphinxcontrib.sass'`` to the ``extensions`` list
+add ``'sphinx_sass'`` to the ``extensions`` list
 and add the ``sass_configs`` variable.
 This is a list of dictionaries,
 where each dictionary is a separate configuration.
@@ -36,7 +36,7 @@ where each dictionary is a separate configuration.
 
     extensions = [
         # Other extensions...
-        'sphinxcontrib.sass'
+        'sphinx_sass'
     ]
 
     # Other configuration options...

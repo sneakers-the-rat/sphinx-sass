@@ -31,13 +31,13 @@ from setup import find_version
 
 # -- Project information -----------------------------------------------------
 
-project = 'sphinxcontrib-sass'
+project = 'sphinx-sass'
 copyright = '2019, Mark Wibrow'
 author = 'Mark Wibrow'
 
 
 # The full version, including alpha/beta/rc tags
-release = find_version('sphinxcontrib', 'sass')
+release = find_version()
 # The short X.Y version
 version = '.'.join(release.split('.')[:2])
 
@@ -54,7 +54,7 @@ version = '.'.join(release.split('.')[:2])
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinxcontrib.sass'
+    'sphinx_sass'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -79,7 +79,9 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = [
+    'defs.rst',
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -99,7 +101,7 @@ html_theme = 'alabaster'
 html_theme_options = {
     'description': 'Compile SASS to CSS with Sphinx',
     'fixed_sidebar': True,
-    'github_repo': 'sphinxcontrib-sass',
+    'github_repo': 'sphinx-sass',
     'github_user': 'mwibrow',
     'codecov_button': True,
     'travis_button': True,

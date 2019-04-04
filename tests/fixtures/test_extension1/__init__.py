@@ -17,5 +17,5 @@ def init(_app, config):
 
 def setup(app):
     """Setup up the test extension."""
-    app.setup_extension('sphinxcontrib.sass')
+    app.setup_extension('sphinx_sass')
     app.connect('config-inited', init)

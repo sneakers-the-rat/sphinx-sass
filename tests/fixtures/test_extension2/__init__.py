@@ -18,6 +18,6 @@ def init(_app, config):
 def setup(app):
     """Setup up the test extension."""
     # Also set up extension 1 as a dependency.
-    app.setup_extension('sphinxcontrib.sass')
+    app.setup_extension('sphinx_sass')
     app.setup_extension('tests.fixtures.test_extension1')
     app.connect('config-inited', init)
