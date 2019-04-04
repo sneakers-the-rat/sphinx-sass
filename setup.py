@@ -8,6 +8,7 @@ import re
 from setuptools import setup, find_packages
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+PACKAGE_DIR = os.path.join(PROJECT_ROOT, 'sphinxcontrib', 'sass')
 
 
 def read(*paths, **kwargs):
@@ -23,8 +24,6 @@ def find_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-PACKAGE_DIR = os.path.join(PROJECT_ROOT, 'sphinxcontrib', 'sass')
-
 DISTNAME = 'sphinxcontrib-sass'
 DESCRIPTION = 'Compile SASS and SCSS to CSS for Sphinx HTML documentation'
 LONG_DESCRIPTION = read(PROJECT_ROOT, 'README.rst')
@@ -32,12 +31,8 @@ AUTHOR = 'Mark Wibrow'
 AUTHOR_EMAIL = None
 URL = 'https://github.com/mwibrow/sphinx-sass'
 LICENSE = 'MIT'
-
-
 REQUIREMENTS = read(PROJECT_ROOT, 'requirements.txt')
 REQUIREMENTS_DEV = read(PROJECT_ROOT, 'requirements-dev.txt')
-
-
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
@@ -60,25 +55,31 @@ CLASSIFIERS = [
     'Programming Language :: Python :: Implementation :: PyPy',
 ]
 
-setup(
-    name=DISTNAME,
-    version=find_version(PACKAGE_DIR, '__init__.py'),
-    description=DESCRIPTION,
-    long_description=LONG_DESCRIPTION,
-    url=URL,
-    author=AUTHOR,
-    license=LICENSE,
-    platforms='any',
-    packages=find_packages(
-        where=PROJECT_ROOT,
-        exclude=['tests', 'docs']
-    ),
-    install_requires=REQUIREMENTS,
-    classifiers=CLASSIFIERS,
-    extras_require={
-        'dev': REQUIREMENTS_DEV
-    },
-    python_requires='>=3.5',
-    namespace_packages=['sphinxcontrib'],
-    zip_safe=False,
-)
+
+def setup_sphinxcontrib_sass():
+    setup(
+        name=DISTNAME,
+        version=find_version(PACKAGE_DIR, '__init__.py'),
+        description=DESCRIPTION,
+        long_description=LONG_DESCRIPTION,
+        url=URL,
+        author=AUTHOR,
+        license=LICENSE,
+        platforms='any',
+        packages=find_packages(
+            where=PROJECT_ROOT,
+            exclude=['tests', 'docs']
+        ),
+        install_requires=REQUIREMENTS,
+        classifiers=CLASSIFIERS,
+        extras_require={
+            'dev': REQUIREMENTS_DEV
+        },
+        python_requires='>=3.5',
+        namespace_packages=['sphinxcontrib'],
+        zip_safe=False,
+    )
+
+
+if __name__ == '__main__':
+    setup_sphinxcontrib_sass()

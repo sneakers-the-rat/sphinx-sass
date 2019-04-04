@@ -27,17 +27,19 @@ from sphinx.highlighting import lexers
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+from setup import find_version
+
 # -- Project information -----------------------------------------------------
 
-project = 'sphinx-sass'
+project = 'sphinxcontrib-sass'
 copyright = '2019, Mark Wibrow'
 author = 'Mark Wibrow'
 
-# The short X.Y version
 
-version = ''
 # The full version, including alpha/beta/rc tags
-release = ''
+release = find_version('sphinxcontrib', 'sass')
+# The short X.Y version
+version = '.'.join(release.split('.')[:2])
 
 
 # -- General configuration ---------------------------------------------------
