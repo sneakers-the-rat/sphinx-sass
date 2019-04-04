@@ -99,8 +99,11 @@ html_theme = 'alabaster'
 html_theme_options = {
     'description': 'Compile SASS to CSS with Sphinx',
     'fixed_sidebar': True,
-    'github_repo': 'sphinx-sass',
-    'github_user': 'mwibrow'
+    'github_repo': 'sphinxcontrib-sass',
+    'github_user': 'mwibrow',
+    'codecov_button': True,
+    'travis_button': True,
+
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -119,7 +122,6 @@ html_static_path = ['_static']
 html_sidebars = {
     '*': [
         'about.html',
-        'statusbadges.html',
         'searchbox.html',
     ]
 }
@@ -205,8 +207,9 @@ epub_exclude_files = ['search.html']
 sass_configs = [
     dict(
         entry='_style/main.scss',
-        output='styles/sphinx_sass.css',
-        source_map='file'
+        output='custom.css',
+        source_map='file',
+        add_css_file=False,
     )]
 
 # -- Custom lexer ------------------------------------------------------------

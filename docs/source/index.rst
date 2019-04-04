@@ -10,7 +10,7 @@ when generating documentation for HTML output.
 Installation
 ------------
 
-|Package-name| is compatible with |Python| versions >=3.5 and |Sphinx| >=1.8.
+|Package-name| is compatible with |Python| versions >=3.6 and |Sphinx| >=1.8.
 
 To install |package-name| use:
 
@@ -27,11 +27,19 @@ Configuration from ``conf.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To configure the extension from ``conf.py``
-use the ``sass_configs`` variable.
+add ``'sphinxcontrib.sass'`` to the ``extensions`` list
+and add the ``sass_configs`` variable.
 This is a list of dictionaries,
 where each dictionary is a separate configuration.
 
 .. code:: python
+
+    extensions = [
+        # Other extensions...
+        'sphinxcontrib.sass'
+    ]
+
+    # Other configuration options...
 
     sass_configs = [
         dict=(

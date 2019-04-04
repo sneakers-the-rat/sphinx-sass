@@ -39,6 +39,7 @@ clean: clean-build clean-dist
 
 clean-build:
 	@if [ -d "$(BLDDIR)" ]; then \
+		chmod -R u+rwx $(BLDDIR); \
 		rm -r $(BLDDIR); \
 	fi;
 
