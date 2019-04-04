@@ -121,7 +121,7 @@ Configuration options
 
    .. code-block:: make
 
-      dist:
+      docs-dist:
 	      export SPHINX_SASS_SOURCE_MAPS=FALSE; \
 	      sphinx-build -b html source build
 
