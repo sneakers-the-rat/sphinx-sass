@@ -26,6 +26,6 @@ def test(session):
     session.env['PYTHONPATH'] = '.'
     session.run(
         'py.test',
-        '--cov=sphinxcontrib.sass',
+        '--cov=sphinx_sass',
         '--cov-report=term-missing',
         'tests')

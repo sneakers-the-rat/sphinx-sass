@@ -31,13 +31,13 @@ from setup import find_version
 
 # -- Project information -----------------------------------------------------
 
-project = 'sphinxcontrib-sass'
+project = 'sphinx-sass'
 copyright = '2019, Mark Wibrow'
 author = 'Mark Wibrow'
 
 
 # The full version, including alpha/beta/rc tags
-release = find_version('sphinxcontrib', 'sass')
+release = find_version()
 # The short X.Y version
 version = '.'.join(release.split('.')[:2])
 
@@ -54,7 +54,7 @@ version = '.'.join(release.split('.')[:2])
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinxcontrib.sass'
+    'sphinx_sass'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -79,7 +79,9 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = [
+    'defs.rst',
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -100,7 +102,10 @@ html_theme_options = {
     'description': 'Compile SASS to CSS with Sphinx',
     'fixed_sidebar': True,
     'github_repo': 'sphinx-sass',
-    'github_user': 'mwibrow'
+    'github_user': 'mwibrow',
+    'codecov_button': True,
+    'travis_button': True,
+
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -119,7 +124,6 @@ html_static_path = ['_static']
 html_sidebars = {
     '*': [
         'about.html',
-        'statusbadges.html',
         'searchbox.html',
     ]
 }
@@ -205,8 +209,9 @@ epub_exclude_files = ['search.html']
 sass_configs = [
     dict(
         entry='_style/main.scss',
-        output='styles/sphinx_sass.css',
-        source_map='file'
+        output='custom.css',
+        source_map='file',
+        add_css_file=False,
     )]
 
 # -- Custom lexer ------------------------------------------------------------

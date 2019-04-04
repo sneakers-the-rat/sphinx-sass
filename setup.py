@@ -8,7 +8,7 @@ import re
 from setuptools import setup, find_packages
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
-PACKAGE_DIR = os.path.join(PROJECT_ROOT, 'sphinxcontrib', 'sass')
+PACKAGE_DIR = os.path.join(PROJECT_ROOT, 'sphinx_sass')
 
 
 def read(*paths, **kwargs):
@@ -24,7 +24,7 @@ def find_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-DISTNAME = 'sphinxcontrib-sass'
+DISTNAME = 'sphinx-sass'
 DESCRIPTION = 'Compile SASS and SCSS to CSS for Sphinx HTML documentation'
 LONG_DESCRIPTION = read(PROJECT_ROOT, 'README.rst')
 AUTHOR = 'Mark Wibrow'

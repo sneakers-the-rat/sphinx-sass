@@ -10,13 +10,13 @@ when generating documentation for HTML output.
 Installation
 ------------
 
-|Package-name| is compatible with |Python| versions >=3.5 and |Sphinx| >=1.8.
+|Package-name| is compatible with |Python| versions >=3.6 and |Sphinx| >=1.8.
 
 To install |package-name| use:
 
 .. code:: bash
 
-   pip install sphinxcontrib-sass
+   pip install sphinx-sass
 
 Usage
 -----
@@ -27,11 +27,19 @@ Configuration from ``conf.py``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To configure the extension from ``conf.py``
-use the ``sass_configs`` variable.
+add ``'sphinx_sass'`` to the ``extensions`` list
+and add the ``sass_configs`` variable.
 This is a list of dictionaries,
 where each dictionary is a separate configuration.
 
 .. code:: python
+
+    extensions = [
+        # Other extensions...
+        'sphinx_sass'
+    ]
+
+    # Other configuration options...
 
     sass_configs = [
         dict=(
@@ -104,7 +112,18 @@ Configuration options
    in the same directory as the CSS file specified with
    the ``output`` option, using the CSS filename suffixed
    with ``.map``
-   (so the source map ``main.css`` will be called ``main.css.map``).
+   (so the source map for ``main.css`` will be called ``main.css.map``).
+
+   It is also possible to override source map settings using
+   the environment variable ``SPHINX_SASS_SOURCE_MAPS``.
+   This can be used, for example, in a Makefile to
+   override settings in ``conf.py``:
+
+   .. code-block:: make
+
+      docs-dist:
+	      export SPHINX_SASS_SOURCE_MAPS=FALSE; \
+	      sphinx-build -b html source build
 
 Passing variables to the SASS compiler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

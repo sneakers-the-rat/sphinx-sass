@@ -5,7 +5,7 @@ OUTDIR=html
 GH_PAGES=$(DISTDIR)/gh-pages
 HTMLDIR=$(shell pwd)/$(DISTDIR)/$(OUTDIR)
 EXTENSIONS=
-WATCH=-z ../sphinxcontrib -z ./$(SRCDIR) $(EXTENSIONS)
+WATCH=-z ../sphinx_sass -z ./$(SRCDIR) $(EXTENSIONS)
 CMDOPT=-T -d $(BLDDIR)/.doctrees
 IGNORE=
 SPHINXBUILD=python3 -msphinx
@@ -17,6 +17,7 @@ watch:
 	sphinx-autobuild $(WATCH) $(IGNORE) $(CMDOPT) -b html  $(SRCDIR) $(BLDDIR)/$(OUTDIR)
 
 dist: clean-dist
+	export SPHINX_SASS_SOURCE_MAPS=FALSE; \
 	$(SPHINXBUILD) -E -a -d $(DISTDIR)/.doctrees -b html $(SRCDIR) $(DISTDIR)/$(OUTDIR)
 
 gh-pages: dist
@@ -39,6 +40,7 @@ clean: clean-build clean-dist
 
 clean-build:
 	@if [ -d "$(BLDDIR)" ]; then \
+		chmod -R u+rwx $(BLDDIR); \
 		rm -r $(BLDDIR); \
 	fi;
 

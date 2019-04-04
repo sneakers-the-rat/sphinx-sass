@@ -67,7 +67,8 @@ def compile_sass_config(app, config):
 
     # Environment variable overrides.
     if 'SPHINX_SASS_SOURCE_MAPS' in os.environ:
-        source_maps = os.environ['SPHINX_SASS_SOURCE_MAPS'].lower() in ['y', 'yes', 'true', '1']
+        source_maps = os.environ[
+            'SPHINX_SASS_SOURCE_MAPS'].lower() in ['y', 'yes', 'true', '1']
         if source_maps and not srcmap_filename:
             compile_options['source_map_embed'] = True
         else:
