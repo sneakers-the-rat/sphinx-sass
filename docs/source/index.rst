@@ -112,7 +112,18 @@ Configuration options
    in the same directory as the CSS file specified with
    the ``output`` option, using the CSS filename suffixed
    with ``.map``
-   (so the source map ``main.css`` will be called ``main.css.map``).
+   (so the source map for ``main.css`` will be called ``main.css.map``).
+
+   It is also possible to override source map settings using
+   the environment variable ``SPHINX_SASS_SOURCE_MAPS``.
+   This can be used, for example, in a Makefile to
+   override settings in ``conf.py``:
+
+   .. code:: make
+
+      dist:
+	      export SPHINX_SASS_SOURCE_MAPS=FALSE; \
+	      sphinx-build -b html source build
 
 Passing variables to the SASS compiler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

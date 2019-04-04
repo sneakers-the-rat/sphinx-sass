@@ -17,6 +17,7 @@ watch:
 	sphinx-autobuild $(WATCH) $(IGNORE) $(CMDOPT) -b html  $(SRCDIR) $(BLDDIR)/$(OUTDIR)
 
 dist: clean-dist
+	export SPHINX_SASS_SOURCE_MAPS=FALSE; \
 	$(SPHINXBUILD) -E -a -d $(DISTDIR)/.doctrees -b html $(SRCDIR) $(DISTDIR)/$(OUTDIR)
 
 gh-pages: dist
