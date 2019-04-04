@@ -21,8 +21,8 @@
 .. |importer callbacks| replace:: `importer callbacks`_
 .. _`importer callbacks`: https://sass.github.io/libsass-python/sass.html#importer-callbacks
 
-.. |build status| image:: https://travis-ci.org/mwibrow/sphinx-sass.svg?branch=master
-    :target: https://travis-ci.org/mwibrow/sphinx-sass
+.. |build status| image:: https://travis-ci.org/mwibrow/sphinxcontrib-sass.svg?branch=master
+    :target: https://travis-ci.org/mwibrow/sphinxcontrib-sass
 
-.. |coverage| image:: https://coveralls.io/repos/github/mwibrow/sphinx-sass/badge.svg
-    :target: https://coveralls.io/github/mwibrow/sphinx-sass
+.. |coverage| image:: https://codecov.io/gh/mwibrow/sphinxcontrib-sass/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/mwibrow/sphinxcontrib-sass
