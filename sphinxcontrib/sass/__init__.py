@@ -5,6 +5,7 @@
 """
 from __future__ import absolute_import
 
+import codecs
 from contextlib import contextmanager
 import os
 from pathlib import Path
@@ -81,13 +82,13 @@ def compile_sass_config(app, config):
     if css:
         if not css_output.parent.exists():
             css_output.parent.mkdir(parents=True)
-        with css_output.open('w') as file_out:
+        with codecs.open(str(css_output), 'w', encoding='utf-8') as file_out:
             file_out.write(css)
 
     if srcmap and srcmap_output:
         if not srcmap_output.parent.exists():
             srcmap_output.parent.mkdir(parents=True)
-        with srcmap_output.open('w') as file_out:
+        with codecs.open(str(srcmap_output), 'w', encoding='utf-8') as file_out:
             file_out.write(srcmap)
 
 
