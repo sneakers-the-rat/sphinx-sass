@@ -16,7 +16,7 @@ To install |package-name| use:
 
 .. code:: bash
 
-   pip install sphinx-sass
+   pip install sphinxcontrib-sass
 
 Usage
 -----
