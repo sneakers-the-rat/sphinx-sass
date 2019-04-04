@@ -26,7 +26,22 @@ code {
   border-radius: 2px;
 }
 
-.highlight {
+.highlight-make .highlight {
+  .nf {
+    color: #004461;
+    font-weight: bold;
+  }
+  .o,
+  .p,
+  .se {
+    color: #999999;
+  }
+  .nv {
+    color: #8f0402;
+    font-style: italic;
+  }
+}
+.highlight-scss2 .highlight {
   .nv {
     color: #8f0402;
     font-style: italic;

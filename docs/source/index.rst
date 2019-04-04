@@ -119,7 +119,7 @@ Configuration options
    This can be used, for example, in a Makefile to
    override settings in ``conf.py``:
 
-   .. code:: make
+   .. code-block:: make
 
       dist:
 	      export SPHINX_SASS_SOURCE_MAPS=FALSE; \
