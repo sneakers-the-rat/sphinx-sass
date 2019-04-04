@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import tempfile
 
-import sass  # pylint: disable=all
+import sass  # pylint: disable=import-self
 
 __version__ = '0.0.0'
 
@@ -105,9 +105,10 @@ def compile_sass(entry, compile_options=None):
 
     with chdir(entry.parent):
         if compile_options.get('source_map_filename'):
-            css, srcmap = sass.compile(filename=entry.name, **compile_options)
+            css, srcmap = sass.compile(  # pylint: disable=no-member
+                filename=entry.name, **compile_options)
         else:
-            css = sass.compile(filename=entry.name, **compile_options)
+            css = sass.compile(filename=entry.name, **compile_options)  # pylint: disable=no-member
 
     return css, srcmap
 

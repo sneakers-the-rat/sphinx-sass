@@ -13,7 +13,7 @@ def lint(session):
     session.install('-r', 'requirements.txt')
     session.install('-r', 'requirements-dev.txt')
     session.env['PYTHONPATH'] = '.'
-    session.run('pylint', 'sphinx_sass', 'tests')
+    session.run('pylint', 'sphinxcontrib', 'tests')
 
 
 @nox.session(python=['3.6'])
@@ -26,6 +26,6 @@ def test(session):
     session.env['PYTHONPATH'] = '.'
     session.run(
         'py.test',
-        '--cov=sphinx_sass',
+        '--cov=sphinxcontrib.sass',
         '--cov-report=term-missing',
         'tests')
