@@ -87,7 +87,7 @@ def compile_sass_config(app, config):
     if srcmap and srcmap_output:
         if not srcmap_output.parent.exists():
             srcmap_output.parent.mkdir(parents=True)
-        with open(srcmap_output, 'w') as file_out:
+        with srcmap_output.open('w') as file_out:
             file_out.write(srcmap)
 
 
