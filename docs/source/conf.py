@@ -14,6 +14,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+
+from __future__ import absolute_import
+
 import os
 import sys
 
@@ -22,8 +25,7 @@ from pygments.lexers.css import default, Keyword, Name
 
 from sphinx.highlighting import lexers
 
-sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
-
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # -- Project information -----------------------------------------------------
 
@@ -32,6 +34,7 @@ copyright = '2019, Mark Wibrow'
 author = 'Mark Wibrow'
 
 # The short X.Y version
+
 version = ''
 # The full version, including alpha/beta/rc tags
 release = ''
@@ -49,7 +52,7 @@ release = ''
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx_sass'
+    'sphinxcontrib.sass'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

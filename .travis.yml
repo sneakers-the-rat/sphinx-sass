@@ -7,12 +7,11 @@ branches:
     - master
 
 install:
-  - pip install coveralls codecov nox
+  - pip install codecov nox
 
 script: nox --session "test"
 
 after_success:
-  - coveralls
   - codecov
 
 notifications:

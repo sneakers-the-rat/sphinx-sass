@@ -5,19 +5,19 @@ OUTDIR=html
 GH_PAGES=$(DISTDIR)/gh-pages
 HTMLDIR=$(shell pwd)/$(DISTDIR)/$(OUTDIR)
 EXTENSIONS=
-WATCH=-z ../sphinx_sass -z ./$(SRCDIR) $(EXTENSIONS)
+WATCH=-z ../sphinxcontrib -z ./$(SRCDIR) $(EXTENSIONS)
 CMDOPT=-T -d $(BLDDIR)/.doctrees
 IGNORE=
-
+SPHINXBUILD=python3 -msphinx
 
 html:
-	sphinx-build $(CMDOPT) -b html  $(SRCDIR) $(BLDDIR)/html
+	$(SPHINXBUILD) $(CMDOPT) -b html  $(SRCDIR) $(BLDDIR)/html
 
 watch:
 	sphinx-autobuild $(WATCH) $(IGNORE) $(CMDOPT) -b html  $(SRCDIR) $(BLDDIR)/$(OUTDIR)
 
 dist: clean-dist
-	sphinx-build -E -a -d $(DISTDIR)/.doctrees -b html $(SRCDIR) $(DISTDIR)/$(OUTDIR)
+	$(SPHINXBUILD) -E -a -d $(DISTDIR)/.doctrees -b html $(SRCDIR) $(DISTDIR)/$(OUTDIR)
 
 gh-pages: dist
 	@mkdir -p $(GH_PAGES); \
