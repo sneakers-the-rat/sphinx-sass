@@ -11,7 +11,7 @@ Acknowledgements
 ----------------
 
 This extension makes use of the
-rather excellent |libsass| package.
+rather excellent |libsass-python| package.
 
 
 .. |Package-name| replace:: **Sphinx-sass**
@@ -24,7 +24,7 @@ rather excellent |libsass| package.
 .. |sass| replace:: SASS_
 .. _SASS: https://sass-lang.com/
 
-.. |libsass| replace:: libsass_
+.. |libsass-python| replace:: libsass_
 .. _libsass: https://github.com/sass/libsass-python
 
 .. |build status| image:: https://travis-ci.org/mwibrow/sphinx-sass.svg?branch=master

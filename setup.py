@@ -48,7 +48,6 @@ CLASSIFIERS = [
     'Topic :: Documentation',
     'Topic :: Documentation :: Sphinx',
     'Topic :: Utilities',
-    'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: Implementation :: CPython',
@@ -67,7 +66,6 @@ def setup_sphinxcontrib_sass():
         license=LICENSE,
         platforms='any',
         packages=find_packages(
-            where=PROJECT_ROOT,
             exclude=['tests', 'docs']
         ),
         install_requires=REQUIREMENTS,
@@ -75,8 +73,7 @@ def setup_sphinxcontrib_sass():
         extras_require={
             'dev': REQUIREMENTS_DEV
         },
-        python_requires='>=3.5',
-        namespace_packages=['sphinxcontrib'],
+        python_requires='>=3.6',
         zip_safe=False,
     )
 

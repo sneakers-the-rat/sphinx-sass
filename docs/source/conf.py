@@ -20,14 +20,16 @@ from __future__ import absolute_import
 import os
 import sys
 
-from pygments.lexers.css import ScssLexer
-from pygments.lexers.css import default, Keyword, Name
 
 from sphinx.highlighting import lexers
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '_extensions')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__))))
 
 from setup import find_version
+
+from sass_lexer import ScssLexer
 
 # -- Project information -----------------------------------------------------
 
@@ -52,9 +54,10 @@ version = '.'.join(release.split('.')[:2])
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'sphinx_sass'
+    'sphinx_sass',
+    'sass_example'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -103,9 +106,7 @@ html_theme_options = {
     'fixed_sidebar': True,
     'github_repo': 'sphinx-sass',
     'github_user': 'mwibrow',
-    'codecov_button': True,
-    'travis_button': True,
-
+    'github_count': False,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -124,6 +125,7 @@ html_static_path = ['_static']
 html_sidebars = {
     '*': [
         'about.html',
+        'navigation.html',
         'searchbox.html',
     ]
 }
@@ -205,7 +207,7 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
-
+add_module_names = False
 sass_configs = [
     dict(
         entry='_style/main.scss',
@@ -216,21 +218,4 @@ sass_configs = [
 
 # -- Custom lexer ------------------------------------------------------------
 
-
-class ScssLexer2(ScssLexer):
-    """
-    For SCSS stylesheets.
-    """
-
-    name = 'SCSS2'
-    aliases = ['scss2']
-    filenames = ['*.scss']
-    mimetypes = ['text/x-scss']
-
-    tokens = ScssLexer.tokens
-    tokens['pseudo-class'][-1] = default('value')
-    tokens['value'].insert(1, (r'[!][\w-]+', Keyword))
-    tokens['value'].insert(1, (r'[$][\w-]+', Name.Variable))
-
-
-lexers['scss2'] = ScssLexer2(startinline=True)
+lexers['scss2'] = ScssLexer(startinline=True)
