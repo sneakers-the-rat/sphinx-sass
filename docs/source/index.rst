@@ -67,10 +67,3 @@ in the build directory just before Sphinx exists
 In addition, a link to the the compiled
 CSS file will be automatically added to the ``head`` tag
 of each HTML page.
-
-
-Acknowledgements
-----------------
-
-This extension makes use of the
-rather excellent |libsass-python| package.

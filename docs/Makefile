@@ -30,11 +30,10 @@ gh-pages: dist
 		rm -rf `find . | grep -v "^\([.]\+\|[.]/[.]git.*\)$$"`; \
 		cp -R "$(HTMLDIR)"/* .; \
 		touch .nojekyll; \
-		git add . &> /dev/null; \
-		git commit -a -m "Update gh-pages" &> /dev/null; \
+		git add .; \
+		git commit -a -m "Update gh-pages"; \
 		git push -f origin gh-pages; \
-	); \
-	make clean-gh-pages;
+	);
 
 clean: clean-build clean-dist
 
