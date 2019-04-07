@@ -54,7 +54,8 @@ def compile_sass_config(app: Sphinx, config: dict):
 
     source_map = config.get('source_map', '').lower()
     if source_map in ['embed', 'file']:
-        compile_options = {key: value for key, value in compile_options if not 'source' in key}
+        compile_options = {key: value for key,
+                           value in compile_options.items() if not 'source' in key}
         compile_options['source_map_root'] = 'file://{}'.format(str(entry.parent))
         if source_map == 'file':
             compile_options['source_map_filename'] = '{}{}map'.format(
