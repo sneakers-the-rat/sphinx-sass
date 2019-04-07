@@ -76,7 +76,7 @@ def compile_sass_config(app: Sphinx, config: dict):
             compile_options['source_map_embed'] = True
         else:
             compile_options = {
-                key: value for key, value in compile_options
+                key: value for key, value in compile_options.items()
                 if not 'source' in key}
 
     css, srcmap = compile_sass(
