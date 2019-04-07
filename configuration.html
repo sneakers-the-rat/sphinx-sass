@@ -1,0 +1,251 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configuration &#8212; sphinx-sass 0.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License" href="license.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sphinx-sass</a></h1>
+
+
+
+<p class="blurb">Compile SASS to CSS with Sphinx</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=mwibrow&repo=sphinx-sass&type=watch&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configure-using-conf-py">Configure using <code class="docutils literal notranslate"><span class="pre">conf.py</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configure-an-extension">Configure an extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#passing-variables-to-the-sass-compiler">Passing variables to the SASS compiler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration">
+<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p>There are two ways that <strong>sphinx-sass</strong> can be configured
+depending on whether the extension is being
+configured from <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> or from another
+extension which utilises <strong>sphinx-sass</strong>.</p>
+<div class="section" id="configure-using-conf-py">
+<h2>Configure using <code class="docutils literal notranslate"><span class="pre">conf.py</span></code><a class="headerlink" href="#configure-using-conf-py" title="Permalink to this headline">¶</a></h2>
+<p>To configure the extension from <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>
+add <code class="docutils literal notranslate"><span class="pre">'sphinx_sass'</span></code> to the <code class="docutils literal notranslate"><span class="pre">extensions</span></code> list
+and add the <code class="docutils literal notranslate"><span class="pre">sass_configs</span></code> variable.
+This is a list of dictionaries,
+where each dictionary is a separate configuration.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># Other extensions...</span>
+    <span class="s1">&#39;sphinx_sass&#39;</span>
+<span class="p">]</span>
+
+<span class="c1"># Other Sphinx options...</span>
+
+<span class="n">sass_configs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">dict</span><span class="o">=</span><span class="p">(</span>
+       <span class="c1"># Configuration options.</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>For configuration options, see <a class="reference internal" href="#configuration-options">Configuration options</a> below.</p>
+</div>
+<div class="section" id="configure-an-extension">
+<h2>Configure an extension<a class="headerlink" href="#configure-an-extension" title="Permalink to this headline">¶</a></h2>
+<p>To use <strong>sphinx-sass</strong> in an extension,
+it is necessary to connect to the <code class="docutils literal notranslate"><span class="pre">config-inited</span></code>
+event (note this only available from Sphinx v1.8):</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">app</span><span class="p">):</span>
+   <span class="n">app</span><span class="o">.</span><span class="n">setup_extension</span><span class="p">(</span><span class="s1">&#39;sphinx-sass&#39;</span><span class="p">)</span>
+   <span class="n">app</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;config-inited&#39;</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+   <span class="n">config</span><span class="o">.</span><span class="n">sass_compile_configs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+       <span class="mi">0</span><span class="p">,</span>
+       <span class="nb">dict</span><span class="p">(</span>
+           <span class="c1"># Configuration options.</span>
+       <span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">While the configuration options are the same as for
+those in <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> (see <a class="reference internal" href="#configuration-options">Configuration options</a> below),
+the <code class="docutils literal notranslate"><span class="pre">entry</span></code> path should be an absolute path.</p>
+</div>
+</div>
+<div class="section" id="configuration-options">
+<h2>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><code class="docutils literal notranslate"><span class="pre">entry</span></code></dt>
+<dd>The path to the main SASS/SCSS file which whil be the
+entry point for the SASS compile.
+This may be relative to the directory
+containing the Sphinx <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> file,
+or an absoulte path (an absolute path is required
+if <strong>sphinx-sass</strong> is configured from another extension).</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">output</span></code></dt>
+<dd>The path (including the filename) to the resulting CSS file.
+This should be relative to the first entry
+specified in <code class="docutils literal notranslate"><span class="pre">html_static_path</span></code></dd>
+<dt><code class="docutils literal notranslate"><span class="pre">compile_options</span></code></dt>
+<dd><p class="first">Options passed to the <a class="reference external" href="https://sass.github.io/libsass-python/sass.html#sass.compile">compile</a> function from <a class="reference external" href="https://github.com/sass/libsass-python">libsass-python</a>.
+The <code class="docutils literal notranslate"><span class="pre">string</span></code>, <code class="docutils literal notranslate"><span class="pre">filename</span></code> and <code class="docutils literal notranslate"><span class="pre">directory</span></code> options
+are ignored
+(internally <strong>sphinx-sass</strong> uses the <code class="docutils literal notranslate"><span class="pre">filename</span></code> option).</p>
+<p class="last">Note that correctly configuring an external source map
+can be a little unintuitive, so a convenience
+<code class="docutils literal notranslate"><span class="pre">source_map</span></code> option (described below)
+can be used if external source maps are required.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">add_css_file</span></code></dt>
+<dd>By default, the extension will automatically tell Sphinx to add a
+link to the compiled CSS file. If this is not wanted
+(e.g., if the CSS file is specified in a template),
+then adding this key and setting it to <code class="docutils literal notranslate"><span class="pre">False</span></code> will not
+add the link.</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">source_map</span></code></dt>
+<dd><p class="first">A convenience option for automatically setting the SASS <code class="docutils literal notranslate"><span class="pre">compile_options</span></code>
+for source maps. Setting this option to the value <code class="docutils literal notranslate"><span class="pre">embed</span></code>
+will generate embedded source maps.
+Using the value <code class="docutils literal notranslate"><span class="pre">file</span></code> will generate an external source map
+in the same directory as the CSS file specified with
+the <code class="docutils literal notranslate"><span class="pre">output</span></code> option, using the CSS filename suffixed
+with <code class="docutils literal notranslate"><span class="pre">.map</span></code>
+(so the source map for <code class="docutils literal notranslate"><span class="pre">main.css</span></code> will be called <code class="docutils literal notranslate"><span class="pre">main.css.map</span></code>).</p>
+<p>It is also possible to override source map settings using
+the environment variable <code class="docutils literal notranslate"><span class="pre">SPHINX_SASS_SOURCE_MAPS</span></code>.
+This can be used, for example, in a Makefile to
+override settings in <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>:</p>
+<div class="last highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nf">docs-dist</span><span class="o">:</span>
+        <span class="nb">export</span> <span class="nv">SPHINX_SASS_SOURCE_MAPS</span><span class="o">=</span>FALSE<span class="p">;</span> <span class="se">\</span>
+        sphinx-build -b html <span class="nb">source</span> build
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="passing-variables-to-the-sass-compiler">
+<h2>Passing variables to the SASS compiler<a class="headerlink" href="#passing-variables-to-the-sass-compiler" title="Permalink to this headline">¶</a></h2>
+<p>In rare cases, it may be desirable to pass
+variables from <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> (or an extension initialisation function)
+to the SASS compiler. This can be achieved using
+<a class="reference external" href="https://sass.github.io/libsass-python/sass.html#importer-callbacks">importer callbacks</a>.</p>
+<p>For example, given the entry point <code class="docutils literal notranslate"><span class="pre">main.scss</span></code>:</p>
+<div class="highlight-scss2 notranslate"><div class="highlight"><pre><span></span><span class="k">@import</span> <span class="s2">&quot;abstract&quot;</span><span class="p">;</span>
+<span class="nv">$headline</span><span class="o">:</span> <span class="ni">red</span> <span class="nv">!default</span><span class="p">;</span>
+<span class="nt">h1</span> <span class="p">{</span>
+   <span class="na">color</span><span class="o">:</span> <span class="nv">$headline</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A custom importer can be defined which will be called whenever
+the compiler encouters the <code class="docutils literal notranslate"><span class="pre">&#64;import</span></code> statement:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">abstract_importer</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">prev</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;abstract&#39;</span><span class="p">:</span>
+       <span class="k">return</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;$headline: blue;&#39;</span><span class="p">)</span>
+    <span class="c1"># Handled by other importers, or by default libsass behaviour</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>This can be added to the compile options using the
+<code class="docutils literal notranslate"><span class="pre">importers</span></code> option as a 2-tuple comprising
+an integer and the importer name:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">compile_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+   <span class="n">importers</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">abstract_importer</span><span class="p">)]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The integer value represents the
+relative priority of the custom importer
+(if multiple importers are active, this is used
+to determine the order in which they are applied).
+When compiled, the return value of the <code class="docutils literal notranslate"><span class="pre">abstract_importer</span></code>
+will be imported.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Mark Wibrow.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/configuration.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

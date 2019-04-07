@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css?family=Merriweather+Sans:300,700|Merriweather:300,700");
+html,
+body {
+  font-size: 16px; }
+
+body,
+h1,
+h2,
+h3,
+p {
+  font-family: "Merriweather", "Georgia", "Times New Roman", "Times", serif !important;
+  hyphens: none !important; }
+
+h1 code,
+h2 code,
+h3 code {
+  background-color: transparent !important;
+  padding: 0; }
+
+code,
+pre {
+  background-color: #eee !important; }
+
+code {
+  padding: 0.125em 0.25em;
+  border-radius: 2px; }
+
+.highlight-make .highlight .nf {
+  color: #004461;
+  font-weight: bold; }
+
+.highlight-make .highlight .o,
+.highlight-make .highlight .p,
+.highlight-make .highlight .se {
+  color: #999999; }
+
+.highlight-make .highlight .nv {
+  color: #8f0402;
+  font-style: italic; }
+
+.highlight-css .highlight .p, .highlight-scss2 .highlight .p {
+  color: #777; }
+
+.highlight-css .highlight .nv, .highlight-scss2 .highlight .nv {
+  color: #8f0402;
+  font-weight: normal; }
+
+.highlight-css .highlight .kt, .highlight-scss2 .highlight .kt {
+  color: #990000 !important;
+  font-weight: normal; }
+
+.highligh-css .highlight .kp, .highligh-css .highlight .nd, .highlight-scss2 .highlight .kp, .highlight-scss2 .highlight .nd, .highlight-sass .highlight .kp, .highlight-sass .highlight .nd {
+  color: #004461;
+  font-style: italic;
+  font-weight: normal; }
+
+dl {
+  padding-top: 1rem; }
+  dl dd {
+    padding-bottom: 0.5rem; }
+  dl dt {
+    padding-bottom: 0.5rem; }
+    dl dt code {
+      padding: 0.25rem 0.5rem !important; }
+      dl dt code span.pre {
+        font-weight: bold !important;
+        font-size: 1rem !important; }
+
+.highlight pre {
+  border-radius: 2px; }
+
+.highlight .gp {
+  color: #c65d09; }
+
+.sphinxsidebarwrapper {
+  font-size: 14px; }
+  .sphinxsidebarwrapper li code {
+    background-color: transparent !important;
+    padding: 0;
+    font-weight: normal; }
+    @media screen and (max-width: 870px) {
+      .sphinxsidebarwrapper li code {
+        color: #aaaaaa; } }
+  .sphinxsidebarwrapper ul {
+    list-style: none !important; }
+    .sphinxsidebarwrapper ul ul li::before {
+      content: "\2022";
+      font-weight: bold;
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em; }
+      @media screen and (max-width: 870px) {
+        .sphinxsidebarwrapper ul ul li::before {
+          color: #aaaaaa; } }
+
+.admonition.note, .admonition.warning {
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: 8px solid rgba(0, 0, 0, 0.125);
+  border-radius: 2px;
+  background-color: #eee; }
