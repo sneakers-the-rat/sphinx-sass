@@ -6,7 +6,7 @@ GH_PAGES=$(DISTDIR)/gh-pages
 HTMLDIR=$(shell pwd)/$(DISTDIR)/$(OUTDIR)
 EXTENSIONS=
 WATCH=-z ../sphinx_sass -z ./$(SRCDIR) $(EXTENSIONS)
-CMDOPT=-T -d $(BLDDIR)/.doctrees
+CMDOPT=-E -a -d $(BLDDIR)/.doctrees
 IGNORE=
 SPHINXBUILD=python3 -msphinx
 

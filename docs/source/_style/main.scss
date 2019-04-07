@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Merriweather+Sans:300,700|Merriweather:300,700");
 
-$border: 3px solid #d0d0d0;
+$border: 3px solid rgba(0, 0, 0, 0.125);
+$code-color: #eee;
 
 html,
 body {
@@ -16,9 +17,18 @@ p {
   hyphens: none !important;
 }
 
+h1,
+h2,
+h3 {
+  code {
+    background-color: transparent !important;
+    padding: 0;
+  }
+}
+
 code,
 pre {
-  background-color: #f7f7f7 !important;
+  background-color: $code-color !important;
 }
 
 code {
@@ -41,10 +51,31 @@ code {
     font-style: italic;
   }
 }
-.highlight-scss2 .highlight {
-  .nv {
-    color: #8f0402;
-    font-style: italic;
+
+.highlight-css, .highlight-scss2 {
+  .highlight {
+    .p {
+      color: #777;
+    }
+    .nv {
+      color: #8f0402;
+      font-weight: normal;
+    }
+    .kt {
+      color: #990000 !important;
+      font-weight: normal;
+    }
+
+  }
+}
+
+.highligh-css, .highlight-scss2, .highlight-sass {
+  .highlight {
+    .kp, .nd {
+      color: #004461;
+      font-style: italic;
+      font-weight: normal;
+    }
   }
 }
 
@@ -57,7 +88,6 @@ dl {
     padding-bottom: 0.5rem;
     code {
       padding: 0.25rem 0.5rem !important;
-      border-left: $border;
       span.pre {
         font-weight: bold !important;
         font-size: 1rem !important;
@@ -67,12 +97,28 @@ dl {
 }
 
 .highlight pre {
-  border-left: $border;
   border-radius: 2px;
+}
+
+.highlight {
+  .gp {
+    color: #c65d09;
+  }
 }
 
 .sphinxsidebarwrapper {
   font-size: 14px;
+
+  li {
+    code {
+      background-color: transparent !important;
+      padding: 0;
+      font-weight: normal;
+      @media screen and (max-width: 870px) {
+        color: #aaaaaa;
+      }
+    }
+  }
 
   ul {
     list-style: none !important;
@@ -87,5 +133,17 @@ dl {
         color: #aaaaaa;
       }
     }
+  }
+}
+
+.admonition {
+  &.note,
+  &.warning {
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    border-left: 8px solid rgba(0, 0, 0, 0.125);
+    border-radius: 2px;
+    background-color: $code-color;
   }
 }

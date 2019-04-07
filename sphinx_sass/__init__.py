@@ -10,15 +10,17 @@ from contextlib import contextmanager
 import os
 from pathlib import Path
 import tempfile
+from typing import Tuple, Union
 
 import sass  # pylint: disable=import-self
+from sphinx.application import Sphinx
 
 __version__ = '0.0.0'
 
 
 @contextmanager
-def chdir(path):
-    """Temporarity change the working directory."""
+def chdir(path: Union[str, Path]):
+    """Context manager to temporarily change the working directory."""
     curdir = os.path.abspath(os.curdir)
     try:
         os.chdir(str(path))
@@ -27,14 +29,14 @@ def chdir(path):
         os.chdir(curdir)
 
 
-def run_sass(app, _exception):
-    """Setup sass."""
+def run_sass(app: Sphinx, exception: Exception):  # pylint: disable=unused-argument
+    """Run SASS compiler."""
     configs = app.config.sass_configs
     for config in configs:
         compile_sass_config(app, config)
 
 
-def compile_sass_config(app, config):
+def compile_sass_config(app: Sphinx, config: dict):
     """Compile sass for a particular configuration."""
     build_dir = Path(app.outdir)
     try:
@@ -93,7 +95,7 @@ def compile_sass_config(app, config):
             file_out.write(srcmap)
 
 
-def compile_sass(entry, compile_options=None):
+def compile_sass(entry: Union[str, Path], compile_options: dict = None) -> Tuple[str, str]:
     """Compile sass."""
 
     entry = Path(entry).resolve()  # Just in case we get a pathlib.Path object.
@@ -114,7 +116,7 @@ def compile_sass(entry, compile_options=None):
     return css, srcmap
 
 
-def init(app):
+def init(app: Sphinx):
     """Set up the style sheets."""
     configs = app.config.sass_configs
     for config in configs:
@@ -122,7 +124,7 @@ def init(app):
             app.add_css_file(config['output'])
 
 
-def setup(app):
+def setup(app: Sphinx):
     """Setup the app."""
     app.add_config_value('sass_configs', [], 'env')
     app.connect('builder-inited', init)

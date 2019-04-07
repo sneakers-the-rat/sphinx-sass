@@ -12,8 +12,17 @@
 .. |sass| replace:: SASS_
 .. _SASS: https://sass-lang.com/
 
+.. |sass-way| replace:: `The SASS way`_
+.. _`The SASS way`: http://thesassway.com/
+
+.. |libsass-python| replace:: libsass-python_
+.. _libsass-python: https://github.com/sass/libsass-python
+
 .. |libsass| replace:: libsass_
-.. _libsass: https://github.com/sass/libsass-python
+.. _libsass: https://github.com/sass/libsass
+
+.. |libsass-readme| replace:: README_
+.. _README: https://github.com/sass/libsass#readme
 
 .. |sass.compile| replace:: `compile`_
 .. _`compile`: https://sass.github.io/libsass-python/sass.html#sass.compile
@@ -26,3 +35,13 @@
 
 .. |coverage| image:: https://codecov.io/gh/mwibrow/sphinx-sass/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/mwibrow/sphinx-sass
+
+.. |license| image:: 	https://img.shields.io/github/license/mwibrow/sphinx-sass.svg
+  :target: license.html
+
+.. |pypi| replace:: `PyPI`_
+.. _`PyPI`: https://pypi.org/
+
+.. |repository| replace:: `repository`_
+.. _`repository`: https://github.com/mwibrow/sphinx-sass
+
